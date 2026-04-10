@@ -179,8 +179,8 @@ export const removeCollection = async (req, res) => {
         .json({ success: false, message: "No collection found." });
     }
 
-    const deletedId = await deleteCollection(id);
-    if (!deletedId) {
+    const deleted = await deleteCollection(id);
+    if (!deleted) {
       return res
         .status(500)
         .json({ success: false, message: "Failed to delete collection." });

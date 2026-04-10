@@ -44,4 +44,4 @@ const getCollection = (name) => {
 
 export const photos = () => getCollection("photos");
 export const collections = () => getCollection("collections");
-export const journals = () => getCollection("journals");
+export const journal_posts = () => getCollection("journal_posts");

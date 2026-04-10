@@ -38,7 +38,6 @@ export const updateCollection = async (id, data) => {
   const result = await collections().updateOne(
     { _id: new ObjectId(id) },
     { $set: updates },
-    { returnDocument: "after" },
   );
 
   return result.modifiedCount === 1;

@@ -14,7 +14,7 @@ export const getPhotos = async (req, res) => {
     if (!photos || photos.length === 0) {
       return res
         .status(404)
-        .json({ success: true, message: "No Photos found" });
+        .json({ success: false, message: "No Photos found" });
     }
     return res
       .status(200)
