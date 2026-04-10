@@ -28,5 +28,5 @@ export const findById = async (id) => {
 
 export const deleteOne = async (id) => {
   const result = await photos().deleteOne({ _id: new ObjectId(id) });
-  return result.deletedCount===1;
+  return result.deletedCount === 1;
 };

@@ -6,11 +6,11 @@ export const findAllCollections = async () => {
 };
 
 export const findCollectionById = async (id) => {
-  return collections.findOne({ _id: new ObjectId(id) });
+  return await collections().findOne({ _id: new ObjectId(id) });
 };
 
 export const findCollectionBySlug = async (slug) => {
-  return collections.findOne({ slug });
+  return await collections().findOne({ slug });
 };
 
 export const createCollection = async (data) => {
@@ -23,7 +23,7 @@ export const createCollection = async (data) => {
     createdAt: new Date(),
   };
 
-  const result = await collections.insertOne(doc);
+  const result = await collections().insertOne(doc);
   return result.insertedId;
 };
 
@@ -35,7 +35,30 @@ export const updateCollection = async (id, data) => {
   if (data.description) updates.description = data.description;
   if (data.coverImage) updates.coverImage = data.coverImage;
 
-  const result= await collections.updateOne({_id:new ObjectId(id)}, {$set:updates}, {returnDocument:'after'})
-    
-  return result
+  const result = await collections().updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updates },
+    { returnDocument: "after" },
+  );
+
+  return result.modifiedCount === 1;
+};
+
+export const deleteCollection = async (id) => {
+  const result = await collections().deleteOne({ _id: new ObjectId(id) });
+  return result.deletedCount === 1;
+};
+
+export const increasePhotoCount = async (id) => {
+  await collections().updateOne(
+    { _id: new ObjectId(id) },
+    { $inc: { photoCount: 1 } },
+  );
+};
+
+export const decreasePhotoCount = async (id) => {
+  await collections().updateOne(
+    { _id: new ObjectId(id) },
+    { $inc: { photoCount: -1 } },
+  );
 };

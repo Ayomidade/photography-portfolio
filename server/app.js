@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from "express";
 import cors from "cors";
 import photo_router from "./src/routes/photos.route.js";
+import collection_route from "./src/routes/collection.route.js";
 
 const app = express();
 app.use(
@@ -14,6 +15,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 app.use("/api/photos", photo_router);
+app.use("/api/collections", collection_route)
 
 // ── Health check ──
 app.get("/api/health", (req, res) => {
