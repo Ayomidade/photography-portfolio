@@ -52,6 +52,7 @@ ul, ol {
   --muted: rgba(232, 228, 220, 0.45);
   --accent: #c8a96e;
   --accent-dim: rgba(200, 169, 110, 0.15);
+  --menu: rgba(232, 228, 220, 0.45);
 
   /* Typography */
   --serif: 'Cormorant Garamond', Georgia, serif;
@@ -75,6 +76,9 @@ ul, ol {
   --border: rgba(26, 22, 18, 0.1);
   --text: #1a1612;
   --muted: rgba(26, 22, 18, 0.5);
+  --accent: #c8a96e;
+  --accent-dim: rgba(200, 169, 110, 0.15);
+  --menu: rgba(26, 22, 18, 0.75);
 }
 
 /* ── Typography ── */
