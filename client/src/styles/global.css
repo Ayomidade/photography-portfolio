@@ -1,0 +1,137 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ── CSS Variables — Dark Theme (default) ── */
+:root {
+  /* Colors */
+  --black: #080808;
+  --deep: #0f0f0f;
+  --surface: #161616;
+  --border: rgba(255, 255, 255, 0.07);
+  --text: #e8e4dc;
+  --muted: rgba(232, 228, 220, 0.45);
+  --accent: #c8a96e;
+  --accent-dim: rgba(200, 169, 110, 0.15);
+
+  /* Typography */
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Montserrat', sans-serif;
+
+  /* Spacing */
+  --section-padding: 120px 48px;
+  --section-padding-tablet: 80px 32px;
+  --section-padding-mobile: 60px 20px;
+
+  /* Transitions */
+  --transition: 0.3s ease;
+  --transition-slow: 0.6s ease;
+}
+
+/* ── Light Theme ── */
+:root[data-theme='light'] {
+  --black: #f5f2ed;
+  --deep: #ede9e2;
+  --surface: #e2ddd6;
+  --border: rgba(26, 22, 18, 0.1);
+  --text: #1a1612;
+  --muted: rgba(26, 22, 18, 0.5);
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.1;
+}
+
+p {
+  line-height: 1.7;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-dim);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ── Utility classes ── */
+.section-padding {
+  padding: var(--section-padding);
+}
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Responsive section padding ── */
+@media (max-width: 1024px) {
+  :root {
+    --section-padding: var(--section-padding-tablet);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --section-padding: var(--section-padding-mobile);
+  }
+}
