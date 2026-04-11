@@ -139,7 +139,7 @@ export const editPost = async (req, res) => {
         .json({ success: false, message: "Post not found." });
     }
 
-    const updated = await updatePost(id, {
+    await updatePost(id, {
       title,
       excerpt,
       content,
@@ -148,15 +148,9 @@ export const editPost = async (req, res) => {
       date,
     });
 
-    if (updated) {
-      return res
-        .status(200)
-        .json({ success: true, message: "Post updated successfully." });
-    } else {
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to update post." });
-    }
+    return res
+      .status(200)
+      .json({ success: true, message: "Post updated successfully." });
   } catch (error) {
     console.error("editPost error:", error.message);
     return res.status(500).json({ success: false, message: error.message });

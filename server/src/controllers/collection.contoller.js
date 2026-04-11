@@ -138,23 +138,23 @@ export const editCollection = async (req, res) => {
         .json({ success: false, message: "No collection found." });
     }
 
-    const updatedCollection = await updateCollection(id, {
+    await updateCollection(id, {
       name,
       slug,
       description,
       coverImage,
     });
-    if (updatedCollection) {
-      return res.status(200).json({
-        success: true,
-        message: "Collection updated successfully.",
-        // data: updatedCollection,
-      });
-    } else {
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to update collection." });
-    }
+    // if (updatedCollection) {
+    return res.status(200).json({
+      success: true,
+      message: "Collection updated successfully.",
+      // data: updatedCollection,
+    });
+    // } else {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: "Failed to update collection." });
+    // }
   } catch (error) {
     console.error("editCollection error:", error.message);
     return res.status(500).json({ success: false, message: error.message });
