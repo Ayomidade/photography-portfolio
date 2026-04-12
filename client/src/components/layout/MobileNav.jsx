@@ -84,7 +84,7 @@ const MobileNav = ({ isOpen, close }) => {
           onClick={close}
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "clamp(32px, 8vw, 48px)",
+            fontSize: "clamp(27px, 4vw, 38px)",
             fontWeight: 300,
             fontStyle: "italic",
             color: "var(--menu)",
@@ -96,7 +96,7 @@ const MobileNav = ({ isOpen, close }) => {
             transition: "color var(--transition)",
           }}
         >
-          Close
+          ~ &nbsp;Close&nbsp; ~
         </button>
 
         <div style={{ display: "flex", gap: "20px", marginTop: "10px" }}>
