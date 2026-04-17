@@ -11,11 +11,11 @@ export const getPhotos = async (req, res) => {
   try {
     const photos = await findAll();
 
-    if (!photos || photos.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No Photos found" });
-    }
+    // if (!photos || photos.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "No Photos found" });
+    // }
     return res
       .status(200)
       .json({ success: true, count: photos.length, data: photos });

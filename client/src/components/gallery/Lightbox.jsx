@@ -36,8 +36,8 @@ const Lightbox = ({
   const active = photos[activeIndex];
   const total = photos.length;
 
-    // console.log(active);
-    // console.log(photos);
+  // console.log(active);
+  // console.log(photos);
   return (
     <div
       aria-modal="true"
@@ -89,19 +89,27 @@ const Lightbox = ({
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
-          width: "70vw",
-          height: "65vh",
+          maxWidth: "90vw",
+          maxHeight: "70vh",
           marginBottom: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transform: isOpen ? "scale(1)" : "scale(0.96)",
+          opacity: isOpen ? 1 : 0,
+          transition: "transform 0.4s ease, opacity 0.4s ease",
         }}
       >
         {/* Photo */}
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            backgroundImage: `url(${active.imageUrl})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            maxWidth: "100%",
+            maxHeight: "70vh",
+            objectFit: "contain",
+            display: "block",
+            borderRadius: "4px",
+            transition: "transform 0.4s ease",
+            cursor: "zoom-in",
           }}
         />
 

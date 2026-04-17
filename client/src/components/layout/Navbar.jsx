@@ -6,12 +6,11 @@ import useMobileNav from "@/hooks/useMobileNav";
 
 const navLinks = [
   { label: "Home", to: "/" },
-  { label: "Portfolio", to: "/portfolio" },
-  { label: "Collections", to: "/collections" },
-  { label: "Journal", to: "/journal" },
+  { label: "Projects", to: "/projects" },
+  { label: "Commissions", to: "/commissions" },
   { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
 ];
-
 const Navbar = () => {
   const { isOpen, toggle, close } = useMobileNav();
   const [scrolled, setScrolled] = useState(false);

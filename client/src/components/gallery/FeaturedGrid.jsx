@@ -49,8 +49,8 @@ import Lightbox from "./Lightbox";
 import SectionLabel from "@/components/ui/SectionLabel";
 import BtnGhost from "@/components/ui/BtnGhost";
 
-const FeaturedGrid = () => {
-  const { data, loading, error } = useFetch("/api/photos?featured=true");
+const FeaturedGrid = () => {``
+  const { data, loading, error } = useFetch("/api/photos");
   const photos = data?.data || [];
   const { isOpen, activeIndex, open, close, next, prev } = useLightbox(
     photos.length,
@@ -167,7 +167,7 @@ const FeaturedGrid = () => {
             padding: "80px 0",
           }}
         >
-          No featured photos yet.
+          No recent photos.
         </p>
       )}
 

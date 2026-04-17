@@ -29,7 +29,7 @@ const HeroContent = () => {
         <span
           style={{
             display: "inline-block",
-            width: "40px",
+            width: "30px",
             height: "1px",
             background: "var(--accent)",
             flexShrink: 0,

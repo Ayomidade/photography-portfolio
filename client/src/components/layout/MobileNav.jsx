@@ -5,10 +5,10 @@ import { useTheme } from "../../context/ThemeContext";
 
 const navLinks = [
   { label: "Home", to: "/" },
-  { label: "Portfolio", to: "/portfolio" },
-  { label: "Collections", to: "/collections" },
-  { label: "Journal", to: "/journal" },
+  { label: "Projects", to: "/projects" },
+  { label: "Commissions", to: "/commissions" },
   { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
 ];
 
 const socialLinks = [
