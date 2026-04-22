@@ -1,36 +1,34 @@
 /**
  * Projects
  *
- * Full projects page — all projects in the grid.
- * No limit passed so all projects render.
+ * Full projects page — all projects in the 2-column grid.
+ * Page title + full ProjectsGrid with no limit.
  */
 
 import SectionLabel from "@/components/ui/SectionLabel";
 import ProjectsGrid from "@/components/projects/ProjectsGrid";
-// import ProjectsGrid from "../components/projects/ProjectsGrid"
 
 const Projects = () => {
   return (
     <>
-      {/* Page header */}
       <div
+        className="section-header"
         style={{
-          paddingTop: "160px",
-          paddingBottom: "0",
+          paddingTop: "calc(var(--nav-height) + 64px)",
+          paddingBottom: 0,
           paddingLeft: "48px",
           paddingRight: "48px",
-          background: "var(--black)",
+          background: "var(--bg)",
         }}
       >
         <SectionLabel label="All Work" />
         <h1
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "clamp(45px, 4vw, 40px)",
+            fontSize: "clamp(35px, 6vw, 60px)",
             fontWeight: 300,
-            lineHeight: 1.05,
             color: "var(--text)",
-            marginBottom: "10px",
+            lineHeight: 1.05,
           }}
         >
           Projects
@@ -38,6 +36,13 @@ const Projects = () => {
       </div>
 
       <ProjectsGrid showHeader={false} />
+      <style>{`
+        
+        @media (max-width: 480px) {
+          .section-header { padding-left: 20px !important; }
+          .section-header { padding-top: calc(var(--nav-height) + 40px) !important; }
+        }
+      `}</style>
     </>
   );
 };

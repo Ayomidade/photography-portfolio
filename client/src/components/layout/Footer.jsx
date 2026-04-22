@@ -1,10 +1,16 @@
+/**
+ * Footer
+ *
+ * Minimal bottom bar — logo left, socials center, copyright right.
+ * Matches the Andrew Esiebo footer structure.
+ */
+
 import { Link } from "react-router-dom";
 
-const socialLinks = [
+const socials = [
   { label: "Instagram", href: "#" },
-  { label: "500px", href: "#" },
-  { label: "Behance", href: "#" },
-  { label: "Newsletter", href: "#" },
+  { label: "Facebook", href: "#" },
+  { label: "LinkedIn", href: "#" },
 ];
 
 const Footer = () => {
@@ -12,55 +18,45 @@ const Footer = () => {
     <>
       <footer
         style={{
-          background: "var(--deep)",
           borderTop: "1px solid var(--border)",
-          padding: "48px",
+          padding: "36px 48px",
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
+          justifyContent: "space-between",
+          background: "var(--bg)",
         }}
       >
-        {/* Logo */}
         <Link
           to="/"
           style={{
-            fontFamily: "var(--serif)",
-            fontSize: "20px",
-            fontWeight: 300,
-            letterSpacing: "0.1em",
+            fontFamily: "var(--sans)",
+            fontSize: "11px",
+            fontWeight: 500,
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
             color: "var(--muted)",
-            textDecoration: "none",
           }}
         >
-          Anthony{" "}
-          <em style={{ color: "var(--accent)", fontStyle: "italic" }}>
-            Monday
-          </em>
+          Anthony Monday
         </Link>
 
-        {/* Social links */}
-        <ul
-          style={{
-            display: "flex",
-            gap: "32px",
-            listStyle: "none",
-          }}
-        >
-          {socialLinks.map(({ label, href }) => (
+        <ul style={{ display: "flex", gap: "28px" }}>
+          {socials.map(({ label, href }) => (
             <li key={label}>
               <a
                 href={href}
                 style={{
                   fontSize: "9px",
-                  letterSpacing: "0.25em",
+                  letterSpacing: "0.22em",
                   textTransform: "uppercase",
-                  color: "rgba(232, 228, 220, 0.3)",
-                  textDecoration: "none",
+                  color: "var(--muted)",
                   transition: "color var(--transition)",
                 }}
-                onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = "var(--text)")
+                }
                 onMouseLeave={(e) =>
-                  (e.target.style.color = "rgba(232, 228, 220, 0.3)")
+                  (e.currentTarget.style.color = "var(--muted)")
                 }
               >
                 {label}
@@ -69,11 +65,10 @@ const Footer = () => {
           ))}
         </ul>
 
-        {/* Copyright */}
         <p
           style={{
-            fontSize: "10px",
-            color: "rgba(232, 228, 220, 0.2)",
+            fontSize: "9px",
+            color: "var(--muted)",
             letterSpacing: "0.1em",
           }}
         >
@@ -81,23 +76,15 @@ const Footer = () => {
         </p>
       </footer>
 
-      {/* Responsive styles */}
       <style>{`
         @media (max-width: 768px) {
           footer {
             flex-direction: column !important;
-            gap: 24px !important;
+            gap: 20px !important;
             text-align: center !important;
-            padding: 40px 24px !important;
+            padding: 32px 20px !important;
           }
-          footer ul {
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-            gap: 16px !important;
-          }
-        }
-        @media (max-width: 480px) {
-          footer { padding: 32px 20px !important; }
+          footer ul { flex-wrap: wrap; justify-content: center; gap: 16px !important; }
         }
       `}</style>
     </>

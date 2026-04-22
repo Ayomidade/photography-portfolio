@@ -1,9 +1,9 @@
 /**
  * ContactForm
  *
- * Controlled form with four fields — Name, Email, Subject, Message.
- * Submits to POST /api/contact via api.js.
- * Manages loading, success and error states internally.
+ * Controlled form — Name, Email, Subject, Message.
+ * Submits to POST /api/contact.
+ * Border-bottom inputs — minimal, matches Andrew Esiebo style.
  */
 
 import { useState } from "react";
@@ -17,15 +17,13 @@ const ContactForm = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       await sendContactMessage(form);
       setSuccess(true);
@@ -37,59 +35,54 @@ const ContactForm = () => {
     }
   };
 
-  if (success) {
+  if (success)
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          height: "100%",
-          gap: "16px",
-        }}
-      >
+      <div style={{ paddingTop: "16px" }}>
         <p
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "28px",
+            fontSize: "22px",
             fontStyle: "italic",
             fontWeight: 300,
             color: "var(--text)",
+            marginBottom: "12px",
           }}
         >
           Message received.
         </p>
-        <p style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.8 }}>
-          Thank you for reaching out. A confirmation has been sent to your inbox
-          — I'll be in touch shortly.
+        <p style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.9 }}>
+          Thank you for reaching out. A confirmation has been sent to your
+          inbox.
         </p>
         <button
           onClick={() => setSuccess(false)}
           style={{
-            marginTop: "8px",
+            marginTop: "20px",
             fontSize: "10px",
             letterSpacing: "0.25em",
             textTransform: "uppercase",
-            color: "var(--accent)",
+            color: "var(--muted)",
             background: "none",
             border: "none",
             cursor: "pointer",
             padding: 0,
+            fontFamily: "var(--sans)",
+            transition: "color var(--transition)",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted)")}
         >
           Send another message
         </button>
       </div>
     );
-  }
 
   const inputStyle = {
     width: "100%",
     background: "transparent",
     border: "none",
     borderBottom: "1px solid var(--border)",
-    padding: "12px 0",
+    padding: "10px 0",
     color: "var(--text)",
     fontFamily: "var(--sans)",
     fontSize: "13px",
@@ -105,65 +98,54 @@ const ContactForm = () => {
     textTransform: "uppercase",
     color: "var(--muted)",
     marginBottom: "10px",
+    fontWeight: 400,
   };
+
+  const fields = [
+    { name: "name", label: "Your Name", type: "text", placeholder: "Jane Doe" },
+    {
+      name: "email",
+      label: "Email Address",
+      type: "email",
+      placeholder: "jane@example.com",
+    },
+    {
+      name: "subject",
+      label: "Subject",
+      type: "text",
+      placeholder: "Commission inquiry",
+    },
+  ];
 
   return (
     <form onSubmit={handleSubmit}>
-      <div style={{ marginBottom: "24px" }}>
-        <label style={labelStyle}>Your Name</label>
-        <input
-          style={inputStyle}
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Jane Doe"
-          required
-          onFocus={(e) => (e.target.style.borderBottomColor = "var(--accent)")}
-          onBlur={(e) => (e.target.style.borderBottomColor = "var(--border)")}
-        />
-      </div>
-
-      <div style={{ marginBottom: "24px" }}>
-        <label style={labelStyle}>Email Address</label>
-        <input
-          style={inputStyle}
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="jane@example.com"
-          required
-          onFocus={(e) => (e.target.style.borderBottomColor = "var(--accent)")}
-          onBlur={(e) => (e.target.style.borderBottomColor = "var(--border)")}
-        />
-      </div>
-
-      <div style={{ marginBottom: "24px" }}>
-        <label style={labelStyle}>Subject</label>
-        <input
-          style={inputStyle}
-          type="text"
-          name="subject"
-          value={form.subject}
-          onChange={handleChange}
-          placeholder="Commission inquiry"
-          required
-          onFocus={(e) => (e.target.style.borderBottomColor = "var(--accent)")}
-          onBlur={(e) => (e.target.style.borderBottomColor = "var(--border)")}
-        />
-      </div>
+      {fields.map(({ name, label, type, placeholder }) => (
+        <div key={name} style={{ marginBottom: "24px" }}>
+          <label style={labelStyle}>{label}</label>
+          <input
+            style={inputStyle}
+            type={type}
+            name={name}
+            value={form[name]}
+            onChange={handleChange}
+            placeholder={placeholder}
+            required
+            onFocus={(e) => (e.target.style.borderBottomColor = "var(--text)")}
+            onBlur={(e) => (e.target.style.borderBottomColor = "var(--border)")}
+          />
+        </div>
+      ))}
 
       <div style={{ marginBottom: "24px" }}>
         <label style={labelStyle}>Message</label>
         <textarea
-          style={{ ...inputStyle, resize: "none", height: "100px" }}
+          style={{ ...inputStyle, resize: "none", height: "90px" }}
           name="message"
           value={form.message}
           onChange={handleChange}
           placeholder="Tell me about your project..."
           required
-          onFocus={(e) => (e.target.style.borderBottomColor = "var(--accent)")}
+          onFocus={(e) => (e.target.style.borderBottomColor = "var(--text)")}
           onBlur={(e) => (e.target.style.borderBottomColor = "var(--border)")}
         />
       </div>
@@ -172,7 +154,7 @@ const ContactForm = () => {
         <p
           style={{
             fontSize: "11px",
-            color: "#e05c5c",
+            color: "#c0392b",
             marginBottom: "16px",
             letterSpacing: "0.05em",
           }}
@@ -185,22 +167,24 @@ const ContactForm = () => {
         type="submit"
         disabled={loading}
         style={{
-          marginTop: "8px",
           fontSize: "10px",
-          letterSpacing: "0.25em",
+          letterSpacing: "0.3em",
           textTransform: "uppercase",
-          color: "var(--black)",
-          background: loading ? "var(--muted)" : "var(--accent)",
+          color: "var(--bg)",
+          background: loading ? "var(--muted)" : "var(--text)",
           border: "none",
-          padding: "16px 40px",
+          padding: "14px 40px",
           cursor: loading ? "not-allowed" : "pointer",
           fontFamily: "var(--sans)",
-          fontWeight: 300,
+          fontWeight: 400,
           transition: "opacity var(--transition), background var(--transition)",
-          width: "100%",
         }}
+        onMouseEnter={(e) => {
+          if (!loading) e.currentTarget.style.opacity = "0.75";
+        }}
+        onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
       >
-        {loading ? "Sending..." : "Send Message →"}
+        {loading ? "Sending..." : "Send Message"}
       </button>
     </form>
   );

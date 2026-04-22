@@ -1,24 +1,33 @@
+/**
+ * SectionLabel
+ *
+ * Small uppercase tag above section titles.
+ * On light theme renders in muted dark.
+ * On dark theme renders in accent gold.
+ */
+
 const SectionLabel = ({ label }) => {
   return (
     <p
       style={{
         fontSize: "9px",
-        letterSpacing: "0.4em",
+        letterSpacing: "0.35em",
         textTransform: "uppercase",
-        color: "var(--accent)",
-        marginBottom: "12px",
+        color: "var(--muted)",
+        marginBottom: "14px",
         display: "flex",
         alignItems: "center",
-        gap: "14px",
+        gap: "12px",
+        fontFamily: "var(--sans)",
+        fontWeight: 400,
       }}
     >
-      {/* Decorative gold line */}
       <span
         style={{
           display: "inline-block",
-          width: "28px",
+          width: "24px",
           height: "1px",
-          background: "var(--accent)",
+          background: "var(--muted)",
           flexShrink: 0,
         }}
       />

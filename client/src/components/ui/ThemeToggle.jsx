@@ -1,3 +1,11 @@
+/**
+ * ThemeToggle
+ *
+ * Minimal toggle — sun/moon icon pair.
+ * Light theme shows moon (click to go dark).
+ * Dark theme shows sun (click to go light).
+ */
+
 import { useTheme } from "@/context/ThemeContext";
 
 const ThemeToggle = () => {
@@ -6,32 +14,32 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
       style={{
-        width: "36px",
-        height: "20px",
-        background: theme === "dark" ? "var(--surface)" : "var(--accent-dim)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "28px",
+        height: "28px",
         border: "1px solid var(--border)",
-        borderRadius: "10px",
-        position: "relative",
-        cursor: "pointer",
-        transition: "background var(--transition)",
+        borderRadius: "50%",
+        color: "var(--muted)",
+        fontSize: "11px",
+        transition: "color var(--transition), border-color var(--transition)",
         flexShrink: 0,
+        cursor: "pointer",
+        background: "none",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = "var(--text)";
+        e.currentTarget.style.borderColor = "var(--text)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "var(--muted)";
+        e.currentTarget.style.borderColor = "var(--border)";
       }}
     >
-      <span
-        style={{
-          position: "absolute",
-          left: theme === "dark" ? "3px" : "19px",
-          top: "3px",
-          width: "12px",
-          height: "12px",
-          background: "var(--accent)",
-          borderRadius: "50%",
-          transition: "left var(--transition)",
-          display: "block",
-        }}
-      />
+      {theme === "light" ? "◐" : "○"}
     </button>
   );
 };

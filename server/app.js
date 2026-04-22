@@ -3,6 +3,9 @@ import cors from "cors";
 import photo_router from "./src/routes/photos.route.js";
 import collection_route from "./src/routes/collection.route.js";
 import post_route from "./src/routes/post.route.js";
+import session from "express-session";
+import adminRoute from "./src/routes/admin.route.js";
+import { MongoStore } from "connect-mongo";
 
 const app = express();
 app.use(
@@ -15,6 +18,27 @@ app.use(
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL,
+      dbName: "photography_portfolio",
+      collectionName: "sessions",
+      ttl: 60 * 60 * 24, // session expires after 24 hours (seconds)
+      autoRemove: "native", // MongoDB TTL index handles cleanup automatically
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours (milliseconds)
+    },
+  }),
+);
+
+app.use("/api/admin", adminRoute);
 app.use("/api/photos", photo_router);
 app.use("/api/collections", collection_route);
 app.use("/api/posts", post_route);

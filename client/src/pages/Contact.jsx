@@ -1,8 +1,8 @@
 /**
  * Contact
  *
- * Standalone contact page — full ContactSection plus
- * direct contact details in the style of Andrew Esiebo's contact page.
+ * Page header + ContactSection.
+ * Matches Andrew Esiebo contact page structure.
  */
 
 import SectionLabel from "@/components/ui/SectionLabel";
@@ -12,22 +12,20 @@ const Contact = () => {
   return (
     <>
       <div
+      className="section-header"
         style={{
-          background: "var(--black)",
-          paddingTop: "160px",
-          paddingLeft: "48px",
-          paddingRight: "48px",
-          paddingBottom: "0",
+          padding: "calc(var(--nav-height) + 64px) 48px 0",
+          background: "var(--bg)",
         }}
       >
         <SectionLabel label="Reach Out" />
         <h1
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "clamp(48px, 6vw, 80px)",
+            fontSize: "clamp(35px, 6vw, 60px)",
             fontWeight: 300,
-            lineHeight: 1.05,
             color: "var(--text)",
+            lineHeight: 1.05,
           }}
         >
           Contact
@@ -35,6 +33,15 @@ const Contact = () => {
       </div>
 
       <ContactSection />
+
+
+  <style>{`
+        
+        @media (max-width: 480px) {
+          .section-header { padding-left: 20px !important; }
+          .section-header { padding-top: calc(var(--nav-height) + 40px) !important; }
+        }
+      `}</style>
     </>
   );
 };

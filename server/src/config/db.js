@@ -45,3 +45,4 @@ const getCollection = (name) => {
 export const photos = () => getCollection("photos");
 export const collections = () => getCollection("collections");
 export const journal_posts = () => getCollection("journal_posts");
+export const admin = () => getCollection("admin");

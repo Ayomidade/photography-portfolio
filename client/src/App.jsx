@@ -10,6 +10,7 @@ import Commissions from "@/pages/Commissions";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
+import Images from "@/pages/Images";
 
 const App = () => {
   return (
@@ -22,7 +23,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:slug" element={<Project />} />
-            <Route path="/commissions" element={<Commissions />} />
+            <Route path="/images" element={<Images />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />

@@ -1,5 +1,8 @@
+/**
+ * NotFound — 404 page, on-brand minimal style.
+ */
+
 import { Link } from "react-router-dom";
-// import "../styles/global.css";
 
 const NotFound = () => {
   return (
@@ -10,7 +13,7 @@ const NotFound = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "var(--black)",
+        background: "var(--bg)",
         textAlign: "center",
         padding: "0 24px",
       }}
@@ -20,54 +23,46 @@ const NotFound = () => {
           fontSize: "9px",
           letterSpacing: "0.4em",
           textTransform: "uppercase",
-          color: "var(--accent)",
-          marginBottom: "16px",
+          color: "var(--muted)",
+          marginBottom: "20px",
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: "10px",
         }}
       >
         <span
           style={{
             display: "inline-block",
-            width: "28px",
+            width: "20px",
             height: "1px",
-            background: "var(--accent)",
+            background: "var(--muted)",
           }}
         />
-        404 Error
-        <span
-          style={{
-            display: "inline-block",
-            width: "28px",
-            height: "1px",
-            background: "var(--accent)",
-          }}
-        />
+        404
       </p>
 
       <h1
         style={{
           fontFamily: "var(--serif)",
-          fontSize: "clamp(64px, 12vw, 120px)",
+          fontSize: "clamp(56px, 10vw, 112px)",
           fontWeight: 300,
           color: "var(--text)",
           lineHeight: 1,
-          marginBottom: "24px",
+          marginBottom: "20px",
+          fontStyle: "italic",
         }}
       >
-        Lost in the{" "}
-        <em style={{ color: "var(--accent)", fontStyle: "italic" }}>dark</em>
+        Not Found
       </h1>
 
       <p
         style={{
           fontSize: "12px",
-          letterSpacing: "0.15em",
+          letterSpacing: "0.1em",
           color: "var(--muted)",
-          maxWidth: "360px",
+          marginBottom: "40px",
+          maxWidth: "340px",
           lineHeight: 1.8,
-          marginBottom: "48px",
         }}
       >
         The page you're looking for doesn't exist or has been moved.
@@ -79,11 +74,13 @@ const NotFound = () => {
           fontSize: "10px",
           letterSpacing: "0.25em",
           textTransform: "uppercase",
-          color: "var(--black)",
-          background: "var(--accent)",
-          padding: "14px 32px",
-          transition: "opacity 0.3s ease",
+          color: "var(--bg)",
+          background: "var(--text)",
+          padding: "13px 32px",
+          transition: "opacity var(--transition)",
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
+        onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
       >
         Back to Home
       </Link>

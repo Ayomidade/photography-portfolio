@@ -1,19 +1,13 @@
 /**
  * PhotoCard
  *
- * A single photo item in the gallery grid.
- * Renders the photo as a background image with a hover overlay
- * that reveals the photo title and category.
+ * Single photo in a grid. Hover scales image slightly.
+ * Used inside the Project single page photo grid.
  *
  * Props:
- * - `photo` (object, required) — { _id, title, category, imageUrl }
- * - `onClick` (function, required) — called when the card is clicked,
- *   triggers the lightbox to open at this photo's index
- * - `style` (object, optional) — additional styles for grid positioning
- *   e.g. { gridRow: '1 / 3' } for the large first card
- *
- * The overlay is hidden by default and fades in on hover.
- * On mobile, the overlay is always visible since there is no hover.
+ * - photo: { _id, title, category, imageUrl }
+ * - onClick: opens lightbox at this index
+ * - style: grid overrides
  */
 
 import { useState } from "react";
@@ -31,15 +25,15 @@ const PhotoCard = ({ photo, onClick, style = {} }) => {
         overflow: "hidden",
         background: "var(--surface)",
         cursor: "pointer",
+        aspectRatio: "4/3",
         ...style,
       }}
     >
-      {/* Photo background image */}
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          backgroundImage: `url(${photo.imageUrl})`,
+          position: "absolute",
+          inset: 0,
+          backgroundImage: photo.imageUrl ? `url(${photo.imageUrl})` : "none",
           backgroundSize: "cover",
           backgroundPosition: "center",
           transition: "transform var(--transition-slow)",
@@ -52,49 +46,10 @@ const PhotoCard = ({ photo, onClick, style = {} }) => {
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(8, 8, 8, 0.55)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "24px",
-          opacity: hovered ? 1 : 0,
-          transition: "opacity var(--transition)",
+          background: hovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0)",
+          transition: "background var(--transition)",
         }}
-        className="photo-overlay"
-      >
-        <h4
-          style={{
-            fontFamily: "var(--serif)",
-            fontSize: "22px",
-            fontWeight: 300,
-            fontStyle: "italic",
-            color: "var(--text)",
-            marginBottom: "4px",
-          }}
-        >
-          {photo.title}
-        </h4>
-        <span
-          style={{
-            fontSize: "9px",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: "var(--accent)",
-          }}
-        >
-          {photo.category}
-        </span>
-      </div>
-
-      {/* Mobile — always show overlay */}
-      <style>{`
-        @media (max-width: 768px) {
-          .photo-overlay {
-            opacity: 1 !important;
-            background: rgba(8, 8, 8, 0.35) !important;
-          }
-        }
-      `}</style>
+      />
     </div>
   );
 };

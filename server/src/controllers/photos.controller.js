@@ -1,5 +1,11 @@
 import { ObjectId } from "mongodb";
-import { create, findAll, findById, deleteOne } from "../models/Photos.js";
+import {
+  create,
+  findAll,
+  findById,
+  deleteOne,
+  findPhotos,
+} from "../models/Photos.js";
 import {
   decreasePhotoCount,
   findCollectionById,
@@ -11,11 +17,6 @@ export const getPhotos = async (req, res) => {
   try {
     const photos = await findAll();
 
-    // if (!photos || photos.length === 0) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, message: "No Photos found" });
-    // }
     return res
       .status(200)
       .json({ success: true, count: photos.length, data: photos });
@@ -137,6 +138,122 @@ export const deletePhoto = async (req, res) => {
       .json({ success: true, message: "Photo deleted successfully" });
   } catch (error) {
     console.error("deletePhoto error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/photos with query parameters for filtering
+export const getAllPhotos = async (req, res) => {
+  try {
+    const { featured, collectionId, standalone } = req.query;
+    const query = {};
+
+    if (featured === "true") {
+      query.featured = true;
+    }
+
+    // CHANGE: added collectionId filter with ObjectId validation
+    if (collectionId) {
+      if (!ObjectId.isValid(collectionId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid collection ID.",
+        });
+      }
+      query.collectionId = new ObjectId(collectionId);
+    }
+
+    // CHANGE: added standalone filter — powers the Commissions gallery page
+    if (standalone === "true") {
+      query.collectionId = null;
+    }
+
+    const photosList = await findPhotos(query);
+
+    return res.status(200).json({
+      success: true,
+      count: photosList.length,
+      data: photosList,
+    });
+  } catch (error) {
+    console.error("getPhotos error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// PUT /api/photos/:id
+export const updatePhoto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, category, imageUrl, collectionId, featured } =
+      req.body;
+
+    if (!ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid photo ID." });
+    }
+
+    if (
+      !title &&
+      !description &&
+      !category &&
+      !imageUrl &&
+      collectionId === undefined &&
+      featured === undefined
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide at least one field to update.",
+      });
+    }
+
+    const photo = await findPhotoById(id);
+    if (!photo) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Photo not found." });
+    }
+
+    // if collectionId is changing, adjust counts on both old and new collection
+    if (
+      collectionId !== undefined &&
+      collectionId !== photo.collectionId?.toString()
+    ) {
+      if (photo.collectionId) {
+        await decrementPhotoCount(photo.collectionId.toString());
+      }
+      if (collectionId) {
+        if (!ObjectId.isValid(collectionId)) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Invalid collection ID." });
+        }
+        const collection = await findCollectionById(collectionId);
+        if (!collection) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Collection not found." });
+        }
+        await incrementPhotoCount(collectionId);
+      }
+    }
+
+    await updateOne(id, {
+      title,
+      description,
+      category,
+      imageUrl,
+      collectionId,
+      featured,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Photo updated successfully.",
+    });
+  } catch (error) {
+    console.error("updatePhoto error:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

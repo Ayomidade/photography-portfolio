@@ -1,82 +1,82 @@
-import { Link } from 'react-router-dom'
+/**
+ * BtnGhost
+ *
+ * Text + arrow link. Muted color, darkens on hover.
+ * Arrow slides right on hover.
+ */
 
-const baseStyle = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '10px',
-  fontSize: '10px',
-  letterSpacing: '0.25em',
-  textTransform: 'uppercase',
-  color: 'var(--muted)',
-  textDecoration: 'none',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  fontFamily: 'var(--sans)',
+import { Link } from "react-router-dom";
+
+const style = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "8px",
+  fontSize: "10px",
+  letterSpacing: "0.22em",
+  textTransform: "uppercase",
+  color: "var(--muted)",
+  textDecoration: "none",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  fontFamily: "var(--sans)",
   fontWeight: 300,
-  transition: 'color var(--transition)',
-}
-
-const Arrow = () => (
-  <span style={{ fontSize: '14px', transition: 'transform var(--transition)' }}>
-    →
-  </span>
-)
+  transition: "color var(--transition)",
+};
 
 const BtnGhost = ({ label, to, href, onClick }) => {
-  const handleMouseEnter = (e) => {
-    e.currentTarget.style.color = 'var(--text)'
-    const arrow = e.currentTarget.querySelector('span')
-    if (arrow) arrow.style.transform = 'translateX(4px)'
-  }
+  const hover = (e) => {
+    e.currentTarget.style.color = "var(--text)";
+    const arrow = e.currentTarget.querySelector(".btn-arrow");
+    if (arrow) arrow.style.transform = "translateX(4px)";
+  };
+  const leave = (e) => {
+    e.currentTarget.style.color = "var(--muted)";
+    const arrow = e.currentTarget.querySelector(".btn-arrow");
+    if (arrow) arrow.style.transform = "translateX(0)";
+  };
 
-  const handleMouseLeave = (e) => {
-    e.currentTarget.style.color = 'var(--muted)'
-    const arrow = e.currentTarget.querySelector('span')
-    if (arrow) arrow.style.transform = 'translateX(0)'
-  }
-
-  // internal navigation
-  if (to) {
-    return (
-      <Link
-        to={to}
-        style={baseStyle}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+  const inner = (
+    <>
+      {label}
+      <span
+        className="btn-arrow"
+        style={{ transition: "transform var(--transition)", fontSize: "12px" }}
       >
-        {label} <Arrow />
-      </Link>
-    )
-  }
+        →
+      </span>
+    </>
+  );
 
-  // external URL
-  if (href) {
+  if (to)
+    return (
+      <Link to={to} style={style} onMouseEnter={hover} onMouseLeave={leave}>
+        {inner}
+      </Link>
+    );
+  if (href)
     return (
       <a
         href={href}
-        target='_blank'
-        rel='noopener noreferrer'
-        style={baseStyle}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={style}
+        onMouseEnter={hover}
+        onMouseLeave={leave}
       >
-        {label} <Arrow />
+        {inner}
       </a>
-    )
-  }
-
-  // click handler only
+    );
   return (
     <button
       onClick={onClick}
-      style={baseStyle}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      style={style}
+      onMouseEnter={hover}
+      onMouseLeave={leave}
     >
-      {label} <Arrow />
+      {inner}
     </button>
-  )
-}
+  );
+};
 
-export default BtnGhost
+export default BtnGhost;

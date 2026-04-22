@@ -1,10 +1,8 @@
 /**
  * Project
  *
- * Single project page — fullscreen photo slideshow.
- * Fetches the collection by slug from the URL param,
- * then fetches all photos belonging to that collection.
- * Renders photos in a fullscreen lightbox-style viewer.
+ * Single project — 3-column photo grid + lightbox.
+ * Fetches collection by slug then all photos in that collection.
  */
 
 import { useParams } from "react-router-dom";
@@ -12,9 +10,10 @@ import { useEffect, useState } from "react";
 import { getCollectionBySlug } from "@/services/api";
 import useFetch from "@/hooks/useFetch";
 import useLightbox from "@/hooks/useLightbox";
+import PhotoCard from "@/components/gallery/PhotoCard";
 import Lightbox from "@/components/gallery/Lightbox";
-import SectionLabel from "@/components/ui/SectionLabel";
 import BtnGhost from "@/components/ui/BtnGhost";
+import SectionLabel from "@/components/ui/SectionLabel";
 
 const Project = () => {
   const { slug } = useParams();
@@ -22,31 +21,28 @@ const Project = () => {
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState(null);
 
-  // fetch collection by slug
   useEffect(() => {
-    const fetchProject = async () => {
+    const load = async () => {
       try {
         setProjectLoading(true);
         const res = await getCollectionBySlug(slug);
-        setProject(res.data);
+        setProject(res.data || res);
       } catch (err) {
         setProjectError(err.message);
       } finally {
         setProjectLoading(false);
       }
     };
-    fetchProject();
+    load();
   }, [slug]);
 
-  // fetch photos belonging to this collection
   const { data: photosData, loading: photosLoading } = useFetch(
     project ? `/api/photos?collectionId=${project._id}` : null,
   );
-
   const photos = photosData?.data || [];
   const { isOpen, activeIndex, open, close, next, prev } = useLightbox();
 
-  if (projectLoading) {
+  if (projectLoading)
     return (
       <div
         style={{
@@ -54,23 +50,22 @@ const Project = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "var(--black)",
+          background: "var(--bg)",
         }}
       >
         <p
           style={{
             color: "var(--muted)",
-            fontSize: "12px",
-            letterSpacing: "0.2em",
+            fontSize: "11px",
+            letterSpacing: "0.25em",
           }}
         >
           Loading...
         </p>
       </div>
     );
-  }
 
-  if (projectError || !project) {
+  if (projectError || !project)
     return (
       <div
         style={{
@@ -79,51 +74,42 @@ const Project = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "var(--black)",
           gap: "24px",
+          background: "var(--bg)",
         }}
       >
-        <p
-          style={{
-            color: "var(--muted)",
-            fontSize: "12px",
-            letterSpacing: "0.2em",
-          }}
-        >
+        <p style={{ color: "var(--muted)", fontSize: "12px" }}>
           Project not found.
         </p>
         <BtnGhost label="Back to Projects" to="/projects" />
       </div>
     );
-  }
 
   return (
     <>
+      {/* Header */}
       <div
         style={{
-          background: "var(--black)",
-          padding: "var(--section-padding)",
-          paddingTop: "160px",
+          padding: "calc(var(--nav-height) + 64px) 48px 48px",
+          background: "var(--bg)",
+          maxWidth: "1400px",
+          margin: "0 auto",
         }}
       >
-        {/* Back link */}
-        <div style={{ marginBottom: "48px" }}>
+        <div style={{ marginBottom: "32px" }}>
           <BtnGhost label="All Projects" to="/projects" />
         </div>
 
-        {/* Project header */}
-        <SectionLabel
-          label={`Project · ${String(project.photoCount ?? 0).padStart(2, "0")} Photographs`}
-        />
+        <SectionLabel label={`${project.photoCount ?? 0} Photographs`} />
         <h1
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "clamp(45px, 4vw, 40px)",
+            fontSize: "clamp(36px, 5vw, 72px)",
             fontWeight: 300,
-            lineHeight: 1.05,
             color: "var(--text)",
             fontStyle: "italic",
-            marginBottom: "16px",
+            marginBottom: "14px",
+            lineHeight: 1.05,
           }}
         >
           {project.name}
@@ -134,81 +120,66 @@ const Project = () => {
               fontSize: "13px",
               lineHeight: 2,
               color: "var(--muted)",
-              maxWidth: "560px",
-              marginBottom: "64px",
+              maxWidth: "540px",
             }}
           >
             {project.description}
           </p>
         )}
-
-        {/* Photo grid */}
-        {photosLoading && (
-          <div
-            className="project-photos-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "3px",
-            }}
-          >
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: "300px",
-                  background: "var(--surface)",
-                  animation: "pulse 1.5s ease-in-out infinite",
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {!photosLoading && photos.length > 0 && (
-          <div
-            className="project-photos-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "3px",
-            }}
-          >
-            {photos.map((photo, i) => (
-              <div
-                key={photo._id}
-                onClick={() => open(i)}
-                style={{
-                  height: "300px",
-                  backgroundImage: `url(${photo.imageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  cursor: "pointer",
-                  transition: "opacity var(--transition)",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              />
-            ))}
-          </div>
-        )}
-
-        {!photosLoading && photos.length === 0 && (
-          <p
-            style={{
-              color: "var(--muted)",
-              fontSize: "12px",
-              letterSpacing: "0.1em",
-              textAlign: "center",
-              padding: "80px 0",
-            }}
-          >
-            No photos in this project yet.
-          </p>
-        )}
       </div>
 
-      {/* Lightbox */}
+      {/* Photo grid */}
+      {photosLoading && (
+        <div
+          className="project-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "3px",
+          }}
+        >
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                aspectRatio: "4/3",
+                background: "var(--surface)",
+                animation: "pulse 1.5s ease-in-out infinite",
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {!photosLoading && photos.length > 0 && (
+        <div
+          className="project-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "3px",
+          }}
+        >
+          {photos.map((photo, i) => (
+            <PhotoCard key={photo._id} photo={photo} onClick={() => open(i)} />
+          ))}
+        </div>
+      )}
+
+      {!photosLoading && photos.length === 0 && (
+        <p
+          style={{
+            color: "var(--muted)",
+            fontSize: "12px",
+            letterSpacing: "0.1em",
+            textAlign: "center",
+            padding: "80px 48px",
+          }}
+        >
+          No photos in this project yet.
+        </p>
+      )}
+
       <Lightbox
         photos={photos}
         activeIndex={activeIndex}
@@ -220,19 +191,11 @@ const Project = () => {
       />
 
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.7; }
-        }
         @media (max-width: 1024px) {
-          .project-photos-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
+          .project-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 768px) {
-          .project-photos-grid {
-            grid-template-columns: 1fr !important;
-          }
+        @media (max-width: 480px) {
+          .project-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </>

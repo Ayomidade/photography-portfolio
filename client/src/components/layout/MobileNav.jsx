@@ -1,25 +1,25 @@
+/**
+ * MobileNav
+ *
+ * Fullscreen overlay for mobile.
+ * All nav links in large serif italic.
+ * ThemeToggle pinned to bottom.
+ * Closes on link tap, Escape key, or route change.
+ */
+
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import ThemeToggle from "../ui/ThemeToggle";
-import { useTheme } from "../../context/ThemeContext";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = [
   { label: "Home", to: "/" },
   { label: "Projects", to: "/projects" },
-  { label: "Commissions", to: "/commissions" },
+  { label: "Image", to: "images" },
   { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
 ];
 
-const socialLinks = [
-  { label: "Instagram", to: "#" },
-  { label: "500px", to: "#" },
-  { label: "Prints", to: "#" },
-];
-
-
 const MobileNav = ({ isOpen, close }) => {
-  
   const location = useLocation();
 
   // close on route change
@@ -27,27 +27,23 @@ const MobileNav = ({ isOpen, close }) => {
     close();
   }, [location.pathname]);
 
-  const { theme } = useTheme();
-
   return (
     <div
       aria-hidden={!isOpen}
       style={{
         position: "fixed",
         inset: 0,
-        background:
-          theme === "dark" ? "rgba(8, 8, 8, 0.98)" : "rgb(102, 102, 102)",
-        zIndex: 105,
+        background: "var(--bg)",
+        zIndex: 99,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? "all" : "none",
-        transition: "opacity 0.4s ease",
+        transition: "opacity 0.35s ease",
       }}
     >
-      {/* Nav links */}
       <nav
         style={{
           display: "flex",
@@ -60,17 +56,18 @@ const MobileNav = ({ isOpen, close }) => {
           <NavLink
             key={label}
             to={to}
+            end={to === "/"}
             onClick={close}
             style={({ isActive }) => ({
               fontFamily: "var(--serif)",
-              fontSize: "clamp(32px, 8vw, 48px)",
+              fontSize: "clamp(28px, 7vw, 44px)",
               fontWeight: 300,
               fontStyle: "italic",
-              color: isActive ? "var(--accent)" : "var(--menu)",
+              color: isActive ? "var(--text)" : "var(--muted)",
               textDecoration: "none",
               padding: "14px 0",
               borderBottom: "1px solid var(--border)",
-              width: "70%",
+              width: "65%",
               textAlign: "center",
               transition: "color var(--transition)",
             })}
@@ -78,70 +75,29 @@ const MobileNav = ({ isOpen, close }) => {
             {label}
           </NavLink>
         ))}
-
-        {/* Close menu button */}
-        <button
-          onClick={close}
-          style={{
-            fontFamily: "var(--serif)",
-            fontSize: "clamp(27px, 4vw, 38px)",
-            fontWeight: 300,
-            fontStyle: "italic",
-            color: "var(--menu)",
-            textDecoration: "none",
-            padding: "14px 0",
-            borderBottom: "1px solid var(--border)",
-            width: "70%",
-            textAlign: "center",
-            transition: "color var(--transition)",
-          }}
-        >
-          ~ &nbsp;Close&nbsp; ~
-        </button>
-
-        <div style={{ display: "flex", gap: "20px", marginTop: "10px" }}>
-          <p
-            style={{
-              fontSize: "10px",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "var(--accent)",
-              textDecoration: "none",
-            }}
-          >
-            Toggle Theme
-          </p>
-          <ThemeToggle />
-        </div>
       </nav>
 
-      {/* Social links */}
+      {/* Theme toggle */}
       <div
         style={{
           position: "absolute",
           bottom: "40px",
           display: "flex",
-          gap: "28px",
+          alignItems: "center",
+          gap: "12px",
         }}
       >
-        {socialLinks.map(({ label, to }) => (
-          <a
-            key={label}
-            href={to}
-            onClick={close}
-            style={{
-              fontFamily: "var(--sans)",
-              fontSize: "9px",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "rgba(232, 228, 220, 0.3)",
-              textDecoration: "none",
-              transition: "color var(--transition)",
-            }}
-          >
-            {label}
-          </a>
-        ))}
+        <span
+          style={{
+            fontSize: "9px",
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          {/* label intentionally empty — toggle is self-explanatory */}
+        </span>
+        <ThemeToggle />
       </div>
     </div>
   );

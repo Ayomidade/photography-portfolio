@@ -1,20 +1,8 @@
 /**
  * Hero
  *
- * The fullscreen opening section of the homepage.
- * Composes three layers stacked on top of each other:
- *
- * 1. HeroBg — the atmospheric CSS art background (position: absolute, inset: 0)
- * 2. HeroContent — the text and CTAs anchored to the bottom left
- * 3. ScrollHint — the animated scroll indicator anchored to the bottom right
- *
- * `position: relative` on the section creates the stacking context
- * that HeroBg's `position: absolute` is relative to.
- *
- * `height: 100vh` makes the section fill the full viewport height
- * so the content sits at the very bottom and the background fills the frame.
- *
- * No props needed — fully self-contained.
+ * Fullscreen opening section — dark atmospheric background,
+ * centered name + tagline, scroll hint at bottom.
  */
 
 import HeroBg from "./HeroBg";
@@ -27,19 +15,15 @@ const Hero = () => {
       style={{
         position: "relative",
         height: "100vh",
+        minHeight: "600px",
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: "center",
+        justifyContent: "center",
         overflow: "hidden",
-        background: "var(--black)",
       }}
     >
-      {/* Atmospheric CSS art background */}
       <HeroBg />
-
-      {/* Text content and CTAs */}
       <HeroContent />
-
-      {/* Scroll indicator — bottom right */}
       <ScrollHint />
     </section>
   );

@@ -1,22 +1,20 @@
 /**
  * Home
  *
- * Homepage assembling all sections in order:
- * Hero → ProjectsGrid (preview) → AboutStrip → ContactSection
+ * Hero → Projects preview (latest 6) → Contact section
+ * Matches Andrew Esiebo homepage structure.
  */
 
 import Hero from "@/components/hero/Hero";
 import ProjectsGrid from "@/components/projects/ProjectsGrid";
-import AboutStrip from "@/components/about/AboutStrip";
 import ContactSection from "@/components/contact/ContactSection";
 
 const Home = () => {
   return (
     <>
       <Hero />
-      <ProjectsGrid limit={3} />
-      <AboutStrip />
-      <ContactSection />
+      {/* <ProjectsGrid limit={6} /> */}
+      {/* <ContactSection /> */}
     </>
   );
 };

@@ -23,6 +23,9 @@ const handleResponse = async (res) => {
 export const getPhotos = (params = "") =>
   fetch(`${BASE_URL}/photos${params}`).then(handleResponse);
 
+export const getStandalonePhotos = () =>
+  fetch(`${BASE_URL}/photos?standalone=true`).then(handleResponse);
+
 export const getPhotoById = (id) =>
   fetch(`${BASE_URL}/photos/${id}`).then(handleResponse);
 

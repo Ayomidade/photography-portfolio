@@ -1,78 +1,51 @@
 /**
  * ContactInfo
  *
- * Left panel of the ContactSection.
- * Renders the section label, tagline and contact details.
- * All static content — no props needed.
+ * Left panel of contact section.
+ * Matches Andrew Esiebo contact page — name, email, phone.
+ * Simple, direct, no decoration.
  */
-
-import SectionLabel from "@/components/ui/SectionLabel";
-
-const contactItems = [
-  { label: "Email", value: "hello@anthonymonday.com" },
-  { label: "Location", value: "Lagos, Nigeria\nAvailable worldwide" },
-  { label: "Work", value: "Commissions · Prints\nExhibitions · Licensing" },
-];
 
 const ContactInfo = () => {
   return (
     <div>
-      <SectionLabel label="Get in Touch" />
-
-      <h2
-        style={{
-          fontFamily: "var(--serif)",
-          fontSize: "clamp(28px, 3vw, 44px)",
-          fontWeight: 300,
-          lineHeight: 1.2,
-          fontStyle: "italic",
-          color: "var(--text)",
-          margin: "20px 0 32px",
-        }}
-      >
-        Let's create something that lasts.
+      <h2 style={{
+        fontFamily: 'var(--serif)',
+        fontSize: 'clamp(24px, 3vw, 36px)',
+        fontWeight: 300,
+        color: 'var(--text)',
+        marginBottom: '28px',
+        letterSpacing: '0.02em',
+      }}>
+        Anthony Monday
       </h2>
 
-      <div style={{ marginTop: "48px" }}>
-        {contactItems.map(({ label, value }) => (
-          <div
-            key={label}
-            style={{
-              display: "flex",
-              gap: "20px",
-              alignItems: "flex-start",
-              padding: "20px 0",
-              borderBottom: "1px solid var(--border)",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "9px",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: "var(--accent)",
-                width: "80px",
-                flexShrink: 0,
-                paddingTop: "2px",
-              }}
-            >
-              {label}
-            </span>
-            <span
-              style={{
-                fontSize: "12px",
-                color: "var(--muted)",
-                lineHeight: 1.8,
-                whiteSpace: "pre-line",
-              }}
-            >
-              {value}
-            </span>
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {[
+          { label: 'Email', value: 'hello@anthonymonday.com', href: 'mailto:hello@anthonymonday.com' },
+          { label: 'Tel', value: '+234 802 000 0000', href: 'tel:+2348020000000' },
+          { label: 'Instagram', value: '@anthonymonday', href: '#' },
+          { label: 'Location', value: 'Lagos, Nigeria' },
+        ].map(({ label, value, href }) => (
+          <p key={label} style={{
+            fontSize: '12px',
+            color: 'var(--muted)',
+            lineHeight: 2,
+            letterSpacing: '0.04em',
+          }}>
+            <span style={{ color: 'var(--text)', fontWeight: 400 }}>{label}:</span>{' '}
+            {href
+              ? <a href={href} style={{ color: 'var(--muted)', transition: 'color var(--transition)' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}
+                >{value}</a>
+              : value
+            }
+          </p>
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ContactInfo;
+export default ContactInfo

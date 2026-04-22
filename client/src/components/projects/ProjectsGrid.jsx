@@ -1,42 +1,38 @@
 /**
  * ProjectsGrid
  *
- * Renders all projects in a responsive CSS grid.
- * Used on both the Home page (preview) and the full Projects page.
+ * Two-column grid of project cards — matches Andrew Esiebo projects page exactly.
+ * Used on both Home (with limit) and Projects page (no limit).
  *
  * Props:
- * - `limit` (number, optional) — if passed, only renders that many projects.
- *   Used on Home to show a preview. Omit for the full Projects page.
- * - `showHeader` (boolean, default true) — toggle section header visibility.
- *   Home page shows it, Projects page has its own page header.
+ * - limit (number) — show only first N projects, used on Home
+ * - showHeader (bool) — show section heading
  */
 
 import useFetch from "@/hooks/useFetch";
+import ProjectCard from "./ProjectCard";
 import SectionLabel from "@/components/ui/SectionLabel";
 import BtnGhost from "@/components/ui/BtnGhost";
-import ProjectCard from "./ProjectCard";
 
 const ProjectsGrid = ({ limit, showHeader = true }) => {
   const { data, loading, error } = useFetch("/api/collections");
-  const allProjects = data?.data || [];
-  const projects = limit ? allProjects.slice(0, limit) : allProjects;
+  const all = data?.data || [];
+  const projects = limit ? all.slice(0, limit) : all;
 
   return (
     <section
       style={{
-        background: "var(--deep)",
         padding: "var(--section-padding)",
-        borderTop: "1px solid var(--border)",
+        background: "var(--bg)",
       }}
     >
-      {/* Section header */}
       {showHeader && (
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-end",
-            marginBottom: "56px",
+            marginBottom: "48px",
             flexWrap: "wrap",
             gap: "16px",
           }}
@@ -46,68 +42,75 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
             <h2
               style={{
                 fontFamily: "var(--serif)",
-                fontSize: "clamp(36px, 4vw, 56px)",
+                fontSize: "clamp(32px, 4vw, 48px)",
                 fontWeight: 300,
-                lineHeight: 1.1,
                 color: "var(--text)",
               }}
             >
-              Recent{" "}
-              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>
-                Work
-              </em>
+              Projects
             </h2>
           </div>
-          {limit && <BtnGhost label="View all projects" to="/projects" />}
+          {limit && <BtnGhost label="View all" to="/projects" />}
         </div>
       )}
 
-      {/* Loading skeleton */}
+      {/* Loading */}
       {loading && (
         <div
           className="projects-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "3px",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "4px",
           }}
         >
           {[...Array(limit || 6)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                minHeight: "380px",
-                background: "var(--surface)",
-                animation: "pulse 1.5s ease-in-out infinite",
-              }}
-            />
+            <div key={i}>
+              <div
+                style={{
+                  aspectRatio: "4/3",
+                  background: "var(--surface)",
+                  animation: "pulse 1.5s ease-in-out infinite",
+                }}
+              />
+              <div style={{ padding: "14px 0 24px" }}>
+                <div
+                  style={{
+                    height: "10px",
+                    width: "40%",
+                    background: "var(--surface)",
+                    animation: "pulse 1.5s ease-in-out infinite",
+                  }}
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
 
-      {/* Error state */}
+      {/* Error */}
       {error && (
         <p
           style={{
             color: "var(--muted)",
             fontSize: "12px",
             letterSpacing: "0.1em",
+            padding: "64px 0",
             textAlign: "center",
-            padding: "80px 0",
           }}
         >
-          Failed to load projects. Please try again later.
+          Failed to load projects.
         </p>
       )}
 
-      {/* Projects grid */}
+      {/* Grid */}
       {!loading && !error && projects.length > 0 && (
         <div
           className="projects-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "3px",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "4px",
           }}
         >
           {projects.map((project, i) => (
@@ -116,15 +119,15 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty */}
       {!loading && !error && projects.length === 0 && (
         <p
           style={{
             color: "var(--muted)",
             fontSize: "12px",
             letterSpacing: "0.1em",
+            padding: "64px 0",
             textAlign: "center",
-            padding: "80px 0",
           }}
         >
           No projects yet.
@@ -132,15 +135,6 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
       )}
 
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.7; }
-        }
-        @media (max-width: 1024px) {
-          .projects-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
         @media (max-width: 768px) {
           .projects-grid {
             grid-template-columns: 1fr !important;

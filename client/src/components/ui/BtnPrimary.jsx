@@ -1,63 +1,61 @@
-import { Link } from 'react-router-dom'
+/**
+ * BtnPrimary
+ *
+ * Solid filled button — dark background, white text on light theme.
+ * Inverts on dark theme automatically via CSS variables.
+ */
 
-const baseStyle = {
-  display: 'inline-block',
-  fontSize: '10px',
-  letterSpacing: '0.25em',
-  textTransform: 'uppercase',
-  color: 'var(--black)',
-  background: 'var(--accent)',
-  padding: '14px 32px',
-  textDecoration: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  fontFamily: 'var(--sans)',
-  fontWeight: 300,
-  transition: 'opacity var(--transition)',
-}
+import { Link } from "react-router-dom";
+
+const style = {
+  display: "inline-block",
+  fontSize: "10px",
+  letterSpacing: "0.25em",
+  textTransform: "uppercase",
+  color: "var(--bg)",
+  background: "var(--text)",
+  padding: "13px 32px",
+  textDecoration: "none",
+  border: "none",
+  cursor: "pointer",
+  fontFamily: "var(--sans)",
+  fontWeight: 400,
+  transition: "opacity var(--transition)",
+};
 
 const BtnPrimary = ({ label, to, href, onClick }) => {
-  // internal navigation — use React Router Link
-  if (to) {
+  const hover = (e) => (e.currentTarget.style.opacity = "0.7");
+  const leave = (e) => (e.currentTarget.style.opacity = "1");
+
+  if (to)
     return (
-      <Link
-        to={to}
-        style={baseStyle}
-        onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-      >
+      <Link to={to} style={style} onMouseEnter={hover} onMouseLeave={leave}>
         {label}
       </Link>
-    )
-  }
-
-  // external URL — use anchor tag with target blank
-  if (href) {
+    );
+  if (href)
     return (
       <a
         href={href}
-        target='_blank'
-        rel='noopener noreferrer'
-        style={baseStyle}
-        onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={style}
+        onMouseEnter={hover}
+        onMouseLeave={leave}
       >
         {label}
       </a>
-    )
-  }
-
-  // click handler only — use button element
+    );
   return (
     <button
       onClick={onClick}
-      style={baseStyle}
-      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-      onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+      style={style}
+      onMouseEnter={hover}
+      onMouseLeave={leave}
     >
       {label}
     </button>
-  )
-}
+  );
+};
 
-export default BtnPrimary
+export default BtnPrimary;

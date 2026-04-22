@@ -1,29 +1,15 @@
 /**
  * Lightbox
  *
- * Fullscreen photo viewer that opens when a PhotoCard is clicked.
- * Renders the active photo full screen with:
- *
- * - Left/right arrow buttons for navigation between photos
- * - Caption showing the photo title and category below the image
- * - Thumbnail strip at the bottom for quick navigation
- * - Close button in the top right corner
- * - Click outside the image to close
+ * Fullscreen photo viewer. Always dark background regardless of theme.
+ * Arrow navigation, thumbnail strip, keyboard support (← → Esc).
  *
  * Props:
- * - `photos` (array, required) — full array of photo objects
- * - `activeIndex` (number, required) — index of the currently shown photo
- * - `isOpen` (boolean, required) — whether the lightbox is visible
- * - `onClose` (function, required) — closes the lightbox
- * - `onNext` (function, required) — advances to next photo
- * - `onPrev` (function, required) — goes back to previous photo
- * - `onThumbClick` (function, required) — jumps to a specific photo by index
- *
- * Arrow key navigation and Escape key are handled in useLightbox.
+ * - photos, activeIndex, isOpen, onClose, onNext, onPrev, onThumbClick
  */
 
 const Lightbox = ({
-  photos,
+  photos = [],
   activeIndex,
   isOpen,
   onClose,
@@ -31,155 +17,130 @@ const Lightbox = ({
   onPrev,
   onThumbClick,
 }) => {
-  if (!photos || photos.length === 0) return null;
-
+  if (!photos.length) return null;
   const active = photos[activeIndex];
   const total = photos.length;
 
-  // console.log(active);
-  // console.log(photos);
+  const navBtn = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "1px solid rgba(255,255,255,0.15)",
+    color: "rgba(255,255,255,0.6)",
+    width: "44px",
+    height: "44px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    fontSize: "18px",
+    transition: "border-color 0.25s, color 0.25s",
+  };
+
   return (
     <div
-      aria-modal="true"
       role="dialog"
+      aria-modal="true"
       onClick={onClose}
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.97)",
-        zIndex: 200,
+        background: "rgba(0,0,0,0.97)",
+        zIndex: 500,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? "all" : "none",
-        transition: "opacity 0.4s ease",
+        transition: "opacity 0.35s ease",
         padding: "24px",
       }}
     >
-      {/* Close button */}
+      {/* Close */}
       <button
         onClick={onClose}
         style={{
           position: "absolute",
-          top: "32px",
-          right: "40px",
+          top: "28px",
+          right: "36px",
           fontSize: "9px",
           letterSpacing: "0.3em",
           textTransform: "uppercase",
-          color: "var(--muted)",
+          color: "rgba(255,255,255,0.4)",
           background: "none",
           border: "none",
           cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          transition: "color var(--transition)",
-          zIndex: 201,
+          fontFamily: "var(--sans)",
+          transition: "color 0.25s",
+          zIndex: 1,
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted)")}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
+        }
       >
         ✕ &nbsp; Close
       </button>
 
-      {/* Main image — stop click propagation so clicking image doesn't close */}
+      {/* Main image */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
-          maxWidth: "90vw",
-          maxHeight: "70vh",
-          marginBottom: "24px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transform: isOpen ? "scale(1)" : "scale(0.96)",
-          opacity: isOpen ? 1 : 0,
-          transition: "transform 0.4s ease, opacity 0.4s ease",
+          width: "70vw",
+          height: "65vh",
+          marginBottom: "20px",
         }}
+        className="lb-main"
       >
-        {/* Photo */}
         <div
           style={{
-            maxWidth: "100%",
-            maxHeight: "70vh",
-            objectFit: "contain",
-            display: "block",
-            borderRadius: "4px",
-            transition: "transform 0.4s ease",
-            cursor: "zoom-in",
+            width: "100%",
+            height: "100%",
+            backgroundImage: active?.imageUrl
+              ? `url(${active.imageUrl})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            background: !active?.imageUrl ? "#111" : undefined,
           }}
         />
 
-        {/* Prev arrow */}
+        {/* Prev */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onPrev(total);
           }}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "-60px",
-            transform: "translateY(-50%)",
-            background: "none",
-            border: "1px solid var(--border)",
-            color: "var(--text)",
-            width: "44px",
-            height: "44px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            fontSize: "18px",
-            transition:
-              "border-color var(--transition), color var(--transition)",
-          }}
+          style={{ ...navBtn, left: "-60px" }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--accent)";
-            e.currentTarget.style.color = "var(--accent)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
+            e.currentTarget.style.color = "#fff";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--border)";
-            e.currentTarget.style.color = "var(--text)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.6)";
           }}
         >
           ‹
         </button>
 
-        {/* Next arrow */}
+        {/* Next */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onNext(total);
           }}
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: "-60px",
-            transform: "translateY(-50%)",
-            background: "none",
-            border: "1px solid var(--border)",
-            color: "var(--text)",
-            width: "44px",
-            height: "44px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            fontSize: "18px",
-            transition:
-              "border-color var(--transition), color var(--transition)",
-          }}
+          style={{ ...navBtn, right: "-60px" }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--accent)";
-            e.currentTarget.style.color = "var(--accent)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
+            e.currentTarget.style.color = "#fff";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--border)";
-            e.currentTarget.style.color = "var(--text)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.6)";
           }}
         >
           ›
@@ -189,37 +150,40 @@ const Lightbox = ({
       {/* Caption */}
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ textAlign: "center", marginBottom: "24px" }}
+        style={{ textAlign: "center", marginBottom: "20px" }}
       >
-        <p
-          style={{
-            fontFamily: "var(--serif)",
-            fontSize: "20px",
-            fontStyle: "italic",
-            color: "var(--text)",
-            marginBottom: "6px",
-          }}
-        >
-          {active.title}
-        </p>
+        {active?.title && (
+          <p
+            style={{
+              fontFamily: "var(--serif)",
+              fontSize: "18px",
+              fontStyle: "italic",
+              fontWeight: 300,
+              color: "rgba(255,255,255,0.85)",
+              marginBottom: "4px",
+            }}
+          >
+            {active.title}
+          </p>
+        )}
         <p
           style={{
             fontSize: "9px",
             letterSpacing: "0.3em",
             textTransform: "uppercase",
-            color: "var(--accent)",
+            color: "rgba(255,255,255,0.35)",
           }}
         >
-          {active.category}
+          {activeIndex + 1} / {total}
         </p>
       </div>
 
-      {/* Thumbnail strip */}
+      {/* Thumbnails */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           display: "flex",
-          gap: "6px",
+          gap: "4px",
           flexWrap: "wrap",
           justifyContent: "center",
         }}
@@ -229,29 +193,35 @@ const Lightbox = ({
             key={photo._id}
             onClick={() => onThumbClick(i)}
             style={{
-              width: "72px",
-              height: "48px",
-              backgroundImage: `url(${photo.imageUrl})`,
+              width: "60px",
+              height: "40px",
+              backgroundImage: photo.imageUrl
+                ? `url(${photo.imageUrl})`
+                : "none",
               backgroundSize: "cover",
               backgroundPosition: "center",
+              background: !photo.imageUrl ? "#222" : undefined,
               cursor: "pointer",
-              opacity: i === activeIndex ? 1 : 0.4,
+              opacity: i === activeIndex ? 1 : 0.35,
               border:
                 i === activeIndex
-                  ? "1px solid var(--accent)"
+                  ? "1px solid rgba(255,255,255,0.7)"
                   : "1px solid transparent",
-              transition:
-                "opacity var(--transition), border-color var(--transition)",
+              transition: "opacity 0.25s, border-color 0.25s",
               flexShrink: 0,
             }}
           />
         ))}
       </div>
 
-      {/* Mobile responsive */}
       <style>{`
         @media (max-width: 768px) {
-          .lightbox-image { width: 92vw !important; height: 50vh !important; }
+          .lb-main {
+            width: 92vw !important;
+            height: 50vh !important;
+          }
+          .lb-main button:first-of-type { left: 8px !important; background: rgba(0,0,0,0.5) !important; }
+          .lb-main button:last-of-type  { right: 8px !important; background: rgba(0,0,0,0.5) !important; }
         }
       `}</style>
     </div>

@@ -1,8 +1,8 @@
 /**
  * ContactSection
  *
- * Full contact section composing ContactInfo and ContactForm
- * in a two-column split layout. Used on both Home and Contact pages.
+ * Two-column split — ContactInfo left, ContactForm right.
+ * Used on both Home (preview) and Contact page.
  */
 
 import ContactInfo from "./ContactInfo";
@@ -14,9 +14,9 @@ const ContactSection = () => {
       <section
         className="contact-section"
         style={{
-          background: "var(--black)",
-          borderTop: "1px solid var(--border)",
           padding: "var(--section-padding)",
+          background: "var(--bg)",
+          borderTop: "1px solid var(--border)",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "80px",
@@ -28,9 +28,7 @@ const ContactSection = () => {
 
       <style>{`
         @media (max-width: 1024px) {
-          .contact-section {
-            gap: 48px !important;
-          }
+          .contact-section { gap: 48px !important; }
         }
         @media (max-width: 768px) {
           .contact-section {
