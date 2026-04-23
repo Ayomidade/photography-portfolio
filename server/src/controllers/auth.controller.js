@@ -77,7 +77,6 @@ export const login = async (req, res) => {
     req.session.adminId = admin._id.toString();
     req.session.username = admin.username;
 
-    console.log(req)
     return res
       .status(200)
       .json({ success: true, message: `Welcome back ${admin.username}` });
