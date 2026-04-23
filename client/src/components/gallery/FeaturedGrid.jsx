@@ -49,13 +49,12 @@ import Lightbox from "./Lightbox";
 import SectionLabel from "@/components/ui/SectionLabel";
 import BtnGhost from "@/components/ui/BtnGhost";
 
-const FeaturedGrid = () => {``
+const FeaturedGrid = () => {
   const { data, loading, error } = useFetch("/api/photos");
   const photos = data?.data || [];
   const { isOpen, activeIndex, open, close, next, prev } = useLightbox(
     photos.length,
   );
-  // console.log(photos)
 
   return (
     <section

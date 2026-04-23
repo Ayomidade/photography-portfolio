@@ -8,21 +8,41 @@
 import SectionLabel from "@/components/ui/SectionLabel";
 
 const paragraphs = [
-  `Born in Lagos, Nigeria, Anthony Monday is an accomplished visual storyteller whose photography began with providing insight into the rapid urbanisation of Nigeria and Nigeria's vibrant cultural and heritage sites. Over time, he has expanded into multimedia and video reportage, tackling a whole range of complex subjects: sexuality, gender politics, football culture and popular culture, migration, religion, and spirituality.`,
+  `Born in Lagos, Nigeria. Anthony Monday is a visual storyteller who started his 
+career in documentary and conceptual photography. Monday’s work often 
+explores personal confronting issues, memories and identity themes.`,
 
-  `He has been offered the Visa Pour La Création Prize by France's Institut Français as well as the Artistic Creation Prize by the Musée du Quai Branly. Several nominations that he has received in his career include the Prix Pictet, Magnum Emergency Fund, Sovereign African Art Prize, CAP Prize for Contemporary African Photography, and the Joop Stewart Masterclass.`,
+  `For example, “Na Young We Young, No Be Craze We Craze” is a photography 
+body of work that explores the significance of hairstyles among the youth of the 
+urban city of Lagos. Using hairstyle in highlighting how young people assert their 
+individuality, self-expression and self-acceptance through their hairstyles in the 
+face of societal norms.`,
 
-  `In 2010, he was chosen for the Road to Twenty-Ten project as one of an All-Africa Dream Team of journalists and photographers to provide alternative storylines from the host country during South Africa's World Cup.`,
+  `“A Glass Of Identity” is another body of work that reinforces the the subject of 
+identity, personality, and religious preferences focusing on the windscreen and 
+dashboards of Lagos yellow buses, popularly known as “Danfo” and tricycles in the 
+metropolitan city of Lagos, paste symbols, pictorial posters, and mementoes to
+express their innermost beliefs while peacefully coexisting with others who may 
+have conflicting views.`,
 
-  `His work has been extensively exhibited around the world, including in Brazil at the São Paulo Biennial, in Senegal during the Dakárt Biennial, at the Biennale Cuvée in Austria, the Havana Biennale, the Arles Photo Festival, the Photoquai Biennial in France, the Guangzhou Triennial in China, the Chobi Mela V Photo Festival in Bangladesh, the Noorderlicht Photo Festival in the Netherlands, Bamako Encounters in Mali, and also at the Lagos Photo Festival in Nigeria.`,
+  `Anthony Monday has exhibited in several Festivals such as Lagos Photo Festival: 
+Mega City and the Non-City, The Nlele Institute (TNI): FotoParty Lagos, Silent 
+Majority: Insiders Account, Abuja Photo Festival: Boundaries of Reason, 12th
+Bamako Biennial of African Photography off Exhibition: Whither I Stand and the 
+Trajectory of Vision, European Month of Photography: fuer Rotlicht Festival fuer 
+Analoge Fotografie, Vienna, Kunst Haus Göttingen: 4000daily, Germany, Africa 
+Foto Fair: Communities in Motion, Abidjan, Côte d’ivoire,`,
 
-  `His images have been published in titles including National Geographic, The New York Times, Courrier International, Le Point, CNN African Voices, the Washington Post, Financial Times, The Guardian, Marie Claire Italia, Le Monde Magazine, Time Out Nigeria, Mail & Guardian, Bloomberg, and Wallpaper, among many others.`,
+  `Worlds un/making, Iwalewahaus Research Centre FZA, University of Bayreuth, 
+Germany etc. He has exhibited in several European cities like Barcelona, Bayreuth, 
+Berlin and Vienna. Monday’s work has been referred to in several books and 
+journals, including Africa under the Prism, Contemporary African Photography 
+from Lagos Photo Festival, Hatje Cantz, Berlin, Germany, 6mois magazine, France, 
+Lagos Photo Summer School, Camera Austria Nr. 132, Magazine, Graz, Austria, Le 
+Journal de l’Afrique Magazine, France, Clam Substance magazine, France and 
+Mediapolis Journal.`,
 
-  `He has collaborated with a number of local and international institutions while working on social issues. These notably include Kent University, King's College London, the University of Padova, The Photographers' Gallery in London, ActionAid, National Geographic, Women for Women International, MSH Nigeria, and World Press Photo.`,
-
-  `Dedicated to sharing skills and experience, Anthony likes facilitating and leading photography training workshops and mentoring up-and-coming photographers. Notable engagements include serving as the Lead Instructor for Story Lab Training for Red Cross Communication Volunteers in Nigeria, as well as the Lead Instructor and Mentor for Naija in Light, a training project for photographers in Kano and Lagos.`,
-
-  `Anthony Monday presently resides in Lagos, Nigeria but continues to work on visual projects worldwide, using his lens as a means to tell stories that matter.`,
+  `Anthony Monday lives and work in Lagos, Nigeria.`,
 ];
 
 const About = () => {
@@ -82,7 +102,7 @@ const About = () => {
               {/* Replace with: <img src={photoUrl} alt="Anthony Monday" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}} /> */}
               {/* Portrait */}
               <img
-                src={imageUrl}
+                src="/IMG_5752.JPG"
                 alt="Anthony Monday"
                 style={{
                   width: "100%",
@@ -122,6 +142,32 @@ const About = () => {
 
           {/* Bio text */}
           <div className="about-bio" style={{ maxWidth: "620px" }}>
+            {/* Download CV Button */}
+            <div style={{ marginBottom: "40px" }}>
+              <a
+                href="/Anthony-Monday-CV.pdf"
+                download="Anthony-Monday-CV.pdf"
+                style={{
+                  display: "inline-block",
+                  padding: "12px 24px",
+                  borderRadius: "2px",
+                  background: "var(--text)",
+                  color: "var(--bg)",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  transition: "opacity 0.3s ease",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              >
+                Download CV
+              </a>
+            </div>
+
             {paragraphs.map((para, i) => (
               <p
                 key={i}

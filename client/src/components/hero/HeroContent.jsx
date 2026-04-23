@@ -36,7 +36,7 @@ const HeroContent = () => {
       <p
         className="animate-fade-up-delay-1"
         style={{
-          fontSize: "11px",
+          fontSize: "14px",
           fontWeight: 300,
           letterSpacing: "0.18em",
           color: "#fff",
@@ -48,23 +48,22 @@ const HeroContent = () => {
           lineHeight: 1.9,
         }}
       >
-        Anthony Monday is an award-winning visual storyteller available for
-        commissions and artistic collaborations
+        Visual Artist and Documentary Photographer.
       </p>
 
       {/* Contact */}
-      <p
+      {/* <p
         className="animate-fade-up-delay-2"
         style={{
-          fontSize: "10px",
+          fontSize: "12px",
           letterSpacing: "0.15em",
           color: "#fff",
           textShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
         }}
       >
-        <span style={{ marginRight: "20px" }}>hello@anthonymonday.com</span>
-        <span>+234 802 000 0000</span>
-      </p>
+        <span style={{ marginRight: "20px" }}>anthonymonday15@gmail.com</span><br/>
+        <span>+234 915 430 2032</span>
+      </p> */}
     </div>
   );
 };

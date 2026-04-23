@@ -8,6 +8,8 @@
  * - photos, activeIndex, isOpen, onClose, onNext, onPrev, onThumbClick
  */
 
+import { useEffect } from "react";
+
 const Lightbox = ({
   photos = [],
   activeIndex,
@@ -17,9 +19,28 @@ const Lightbox = ({
   onPrev,
   onThumbClick,
 }) => {
-  if (!photos.length) return null;
-  const active = photos[activeIndex];
   const total = photos.length;
+  const active = photos[activeIndex] || null;
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeydown = (e) => {
+      if (e.key === "ArrowRight") {
+        onNext(total);
+      } else if (e.key === "ArrowLeft") {
+        onPrev(total);
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [isOpen, total, onNext, onPrev, onClose]);
+
+  if (!total) return null;
 
   const navBtn = {
     position: "absolute",
@@ -99,12 +120,12 @@ const Lightbox = ({
           style={{
             width: "100%",
             height: "100%",
+            background: active?.imageUrl ? undefined : "#1a1a1a",
             backgroundImage: active?.imageUrl
               ? `url(${active.imageUrl})`
               : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            background: !active?.imageUrl ? "#111" : undefined,
           }}
         />
 
@@ -186,32 +207,40 @@ const Lightbox = ({
           gap: "4px",
           flexWrap: "wrap",
           justifyContent: "center",
+          maxWidth: "90vw",
+          overflowX: "auto",
+          overflowY: "hidden",
+          paddingBottom: "8px",
         }}
       >
-        {photos.map((photo, i) => (
-          <div
-            key={photo._id}
-            onClick={() => onThumbClick(i)}
-            style={{
-              width: "60px",
-              height: "40px",
-              backgroundImage: photo.imageUrl
-                ? `url(${photo.imageUrl})`
-                : "none",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              background: !photo.imageUrl ? "#222" : undefined,
-              cursor: "pointer",
-              opacity: i === activeIndex ? 1 : 0.35,
-              border:
-                i === activeIndex
-                  ? "1px solid rgba(255,255,255,0.7)"
-                  : "1px solid transparent",
-              transition: "opacity 0.25s, border-color 0.25s",
-              flexShrink: 0,
-            }}
-          />
-        ))}
+        {photos.map(
+          (photo, i) => (
+            (
+              <div
+                key={photo._id || i}
+                onClick={() => onThumbClick(i)}
+                style={{
+                  width: "60px",
+                  height: "40px",
+                  backgroundImage: photo.imageUrl
+                    ? `url(${photo.imageUrl})`
+                    : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  // background: !photo.imageUrl ? "#222" : undefined,
+                  cursor: "pointer",
+                  opacity: i === activeIndex ? 1 : 0.35,
+                  border:
+                    i === activeIndex
+                      ? "1px solid rgba(255,255,255,0.7)"
+                      : "1px solid transparent",
+                  transition: "opacity 0.25s, border-color 0.25s",
+                  flexShrink: 0,
+                }}
+              />
+            )
+          ),
+        )}
       </div>
 
       <style>{`
@@ -220,8 +249,19 @@ const Lightbox = ({
             width: 92vw !important;
             height: 50vh !important;
           }
-          .lb-main button:first-of-type { left: 8px !important; background: rgba(0,0,0,0.5) !important; }
-          .lb-main button:last-of-type  { right: 8px !important; background: rgba(0,0,0,0.5) !important; }
+          .lb-main button {
+            width: 44px !important;
+            height: 44px !important;
+            background: rgba(0,0,0,0.6) !important;
+          }
+          .lb-main button:first-of-type { 
+            left: 8px !important;
+            right: auto !important;
+          }
+          .lb-main button:last-of-type { 
+            right: 8px !important;
+            left: auto !important;
+          }
         }
       `}</style>
     </div>

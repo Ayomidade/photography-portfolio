@@ -40,7 +40,9 @@ const Project = () => {
     project ? `/api/photos?collectionId=${project._id}` : null,
   );
   const photos = photosData?.data || [];
-  const { isOpen, activeIndex, open, close, next, prev } = useLightbox();
+  const { isOpen, activeIndex, open, close, next, prev } = useLightbox(
+    photos.length,
+  );
 
   if (projectLoading)
     return (

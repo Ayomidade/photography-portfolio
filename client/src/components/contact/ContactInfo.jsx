@@ -22,9 +22,9 @@ const ContactInfo = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {[
-          { label: 'Email', value: 'hello@anthonymonday.com', href: 'mailto:hello@anthonymonday.com' },
-          { label: 'Tel', value: '+234 802 000 0000', href: 'tel:+2348020000000' },
-          { label: 'Instagram', value: '@anthonymonday', href: '#' },
+          { label: 'Email', value: 'anthonymondday15@gmail.com', href: 'mailto:anthonymonday15@gmail.com' },
+          { label: 'Tel', value: '+234 915 430 2034', href: 'tel:+234 915 430 2034' },
+          { label: 'Instagram', value: '@anthonymonday15', href: 'https://instagram.com/anthonymonday15' },
           { label: 'Location', value: 'Lagos, Nigeria' },
         ].map(({ label, value, href }) => (
           <p key={label} style={{

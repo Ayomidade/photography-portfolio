@@ -96,10 +96,10 @@ const AboutStrip = () => {
               marginBottom: "40px",
             }}
           >
-            Anthony Monday is a visual storyteller based in Lagos, Nigeria,
-            working across landscape, portrait, and documentary photography.
-            Each image is a deliberate act — an attempt to freeze what the eye
-            forgets and the soul remembers.
+            Anthony Monday is a visual storyteller who started his career in
+            documentary and conceptual photography. Each image is a deliberate
+            act — an attempt to freeze what the eye forgets and the soul
+            remembers.
           </p>
 
           <BtnPrimary label="Read Full Bio" to="/about" />

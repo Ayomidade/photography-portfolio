@@ -113,7 +113,7 @@ const ContactForm = () => {
       name: "subject",
       label: "Subject",
       type: "text",
-      placeholder: "Commission inquiry",
+      placeholder: "Project Inquiry",
     },
   ];
 
