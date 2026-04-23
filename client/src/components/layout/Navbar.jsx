@@ -18,7 +18,7 @@ import useMobileNav from "@/hooks/useMobileNav";
 const leftLinks = [
   { label: "Home", to: "/" },
   { label: "Projects", to: "/projects" },
-  { label: "images", to: "images" },
+  { label: "images", to: "/images" },
 ];
 
 const rightLinks = [

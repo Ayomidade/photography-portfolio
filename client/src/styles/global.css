@@ -161,3 +161,42 @@ p {
     background-position: center top !important;
   }
 }
+
+/* ── Admin Responsiveness ── */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    width: 220px;
+  }
+
+  .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .admin-mobile-overlay {
+    display: block !important;
+  }
+
+  .admin-sidebar-close {
+    display: block !important;
+  }
+
+  .admin-menu-btn {
+    display: block !important;
+  }
+
+  .admin-content {
+    margin-left: 0 !important;
+  }
+
+  .admin-topbar {
+    padding: 0 16px !important;
+  }
+}
