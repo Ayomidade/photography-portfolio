@@ -7,6 +7,7 @@ import {
   findCollectionBySlug,
   updateCollection,
 } from "../models/Collections.js";
+import { deleteImage } from "../config/cloudinary.js";
 
 // GET /api/collections
 export const getAllCollections = async (req, res) => {
@@ -77,7 +78,7 @@ export const getCollectionBySlug = async (req, res) => {
 // POST /api/collections
 export const addCollection = async (req, res) => {
   try {
-    const { name, slug, description, coverImage } = req.body;
+    const { name, slug, description, coverImage, coverPublicId } = req.body;
     if (!name || !slug || !description || !coverImage) {
       return res
         .status(400)
@@ -97,6 +98,7 @@ export const addCollection = async (req, res) => {
       slug,
       description,
       coverImage,
+      coverPublicId: coverPublicId || null,
     });
 
     return res
@@ -111,10 +113,10 @@ export const addCollection = async (req, res) => {
 // PATCH /api/collections/:id
 export const editCollection = async (req, res) => {
   try {
-    const { name, slug, description, coverImage } = req.body;
+    const { name, slug, description, coverImage, coverPublicId } = req.body;
     const { id } = req.params;
 
-    if (!name && !slug && !description && !coverImage) {
+    if (!name && !slug && !description && !coverImage && !coverPublicId) {
       return res.status(400).json({
         success: false,
         message: "Provide at least one field to be updated",
@@ -138,11 +140,20 @@ export const editCollection = async (req, res) => {
         .json({ success: false, message: "No collection found." });
     }
 
+    if (
+      coverImage &&
+      coverImage !== collection.coverImage &&
+      collection.coverPublicId
+    ) {
+      await deleteImage(collection.coverPublicId);
+    }
+
     await updateCollection(id, {
       name,
       slug,
       description,
       coverImage,
+      coverPublicId: coverPublicId,
     });
     // if (updatedCollection) {
     return res.status(200).json({
@@ -184,6 +195,10 @@ export const removeCollection = async (req, res) => {
       return res
         .status(500)
         .json({ success: false, message: "Failed to delete collection." });
+    }
+
+    if (collection.coverPublicId) {
+      await deleteImage(collection.coverPublicId);
     }
     return res
       .status(200)

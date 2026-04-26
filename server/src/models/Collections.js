@@ -19,6 +19,7 @@ export const createCollection = async (data) => {
     slug: data.slug,
     description: data.description,
     coverImage: data.coverImage,
+    coverPublicId: data.coverPublicId,
     photoCount: 0,
     createdAt: new Date(),
   };
@@ -34,6 +35,7 @@ export const updateCollection = async (id, data) => {
   if (data.slug) updates.slug = data.slug;
   if (data.description) updates.description = data.description;
   if (data.coverImage) updates.coverImage = data.coverImage;
+  if (data.coverPublicId) updates.coverPublicId = data.coverPublicId;
 
   const result = await collections().updateOne(
     { _id: new ObjectId(id) },

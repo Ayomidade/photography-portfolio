@@ -5,12 +5,14 @@ import {
   findById,
   deleteOne,
   findPhotos,
+  updateOne,
 } from "../models/Photos.js";
 import {
   decreasePhotoCount,
   findCollectionById,
   increasePhotoCount,
 } from "../models/Collections.js";
+import { deleteImage } from "../config/cloudinary.js";
 
 // GET /api/photos
 export const getPhotos = async (req, res) => {
@@ -29,8 +31,15 @@ export const getPhotos = async (req, res) => {
 // POST /api/photos
 export const createPhoto = async (req, res) => {
   try {
-    const { title, description, category, imageUrl, collectionId, featured } =
-      req.body;
+    const {
+      title,
+      description,
+      category,
+      imageUrl,
+      collectionId,
+      featured,
+      imagePublicId,
+    } = req.body;
 
     if (!title) {
       return res
@@ -66,6 +75,7 @@ export const createPhoto = async (req, res) => {
       imageUrl,
       collectionId: collectionId || null,
       featured: featured || false,
+      imagePublicId: imagePublicId || null,
     });
 
     if (collectionId) {
@@ -133,6 +143,11 @@ export const deletePhoto = async (req, res) => {
       await decreasePhotoCount(photo.collectionId);
     }
 
+    // --- Delete from Cloudinary------
+    if (photo.imagePublicId) {
+      await deleteImage(photo.imagePublicId);
+    }
+
     return res
       .status(200)
       .json({ success: true, message: "Photo deleted successfully" });
@@ -185,8 +200,15 @@ export const getAllPhotos = async (req, res) => {
 export const updatePhoto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, category, imageUrl, collectionId, featured } =
-      req.body;
+    const {
+      title,
+      description,
+      category,
+      imageUrl,
+      collectionId,
+      featured,
+      imagePublicId,
+    } = req.body;
 
     if (!ObjectId.isValid(id)) {
       return res
@@ -200,7 +222,8 @@ export const updatePhoto = async (req, res) => {
       !category &&
       !imageUrl &&
       collectionId === undefined &&
-      featured === undefined
+      featured === undefined &&
+      imagePublicId === undefined
     ) {
       return res.status(400).json({
         success: false,
@@ -208,34 +231,38 @@ export const updatePhoto = async (req, res) => {
       });
     }
 
-    const photo = await findPhotoById(id);
+    const photo = await findById(id);
     if (!photo) {
       return res
         .status(404)
         .json({ success: false, message: "Photo not found." });
     }
 
+    if (imageUrl && imageUrl !== photo.imageUrl && photo.imagePublicId) {
+      // Delete the old image from Cloudinary
+      await deleteImage(photo.imagePublicId);
+    }
+
     // if collectionId is changing, adjust counts on both old and new collection
-    if (
-      collectionId !== undefined &&
-      collectionId !== photo.collectionId?.toString()
-    ) {
-      if (photo.collectionId) {
-        await decrementPhotoCount(photo.collectionId.toString());
+    const oldCollectionId = photo.collectionId?.toString();
+    const newCollectionId = collectionId;
+    if (newCollectionId !== undefined && newCollectionId !== oldCollectionId) {
+      if (oldCollectionId) {
+        await decrementPhotoCount(oldCollectionId);
       }
-      if (collectionId) {
-        if (!ObjectId.isValid(collectionId)) {
+      if (newCollectionId) {
+        if (!ObjectId.isValid(newCollectionId)) {
           return res
             .status(400)
             .json({ success: false, message: "Invalid collection ID." });
         }
-        const collection = await findCollectionById(collectionId);
+        const collection = await findCollectionById(newCollectionId);
         if (!collection) {
           return res
             .status(404)
             .json({ success: false, message: "Collection not found." });
         }
-        await incrementPhotoCount(collectionId);
+        await incrementPhotoCount(newCollectionId);
       }
     }
 
@@ -246,6 +273,7 @@ export const updatePhoto = async (req, res) => {
       imageUrl,
       collectionId,
       featured,
+      imagePublicId,
     });
 
     return res.status(200).json({

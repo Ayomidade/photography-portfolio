@@ -1,120 +1,162 @@
 /**
  * EditPhoto
  *
- * Pre-fills form from existing photo.
- * Shows current image preview.
- * Submits to PATCH /api/photos/:id.
+ * Owns the full update flow:
+ *
+ * 1. On mount: fetches existing photo, pre-populates form fields.
+ *    ImageUploader receives existing Cloudinary URL as preview prop.
+ *
+ * 2. If admin selects a new image:
+ *    - imageFile is set via ImageUploader onChange
+ *    - preview shows new local blob URL immediately
+ *
+ * 3. On form submit:
+ *    a. If imageFile exists (new image selected):
+ *       - POST /api/upload/single  → Cloudinary → gets new { url, publicId }
+ *    b. PATCH /api/photos/:id with all fields
+ *       - If new image was uploaded: sends new imageUrl + imagePublicId
+ *         (controller will delete old Cloudinary asset automatically)
+ *       - If no new image: sends existing imageUrl + imagePublicId unchanged
+ * 4. Navigates to /admin/photos on success
  */
 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import AdminLayout from "@/admin/components/AdminLayout";
+import ImageUploader from "@/admin/components/ImageUploader";
 import BtnGhost from "@/components/ui/BtnGhost";
 import useFetch from "@/hooks/useFetch";
 
 const EditPhoto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: collectionsData } = useFetch("/api/collections");
-  const collections = collectionsData?.data || [];
+  const { data: cd } = useFetch("/api/collections");
+  const collections = cd?.data || [];
 
+  // Existing photo fields
   const [form, setForm] = useState({
     title: "",
     description: "",
     category: "",
-    imageUrl: "",
+    imageUrl: "", // existing Cloudinary URL — shown as ImageUploader preview
+    imagePublicId: "", // existing public_id — sent if image not replaced
     collectionId: "",
     featured: false,
   });
+
+  // New image selected by admin (null = no change)
+  const [imageFile, setImageFile] = useState(null);
+
   const [fetching, setFetching] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Load existing photo on mount
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch(`/api/photos/${id}`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
-        const photo = data.data || data;
+    fetch(`/api/photos/${id}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        const p = data.data || data;
         setForm({
-          title: photo.title || "",
-          description: photo.description || "",
-          category: photo.category || "",
-          imageUrl: photo.imageUrl || "",
-          collectionId: photo.collectionId || "",
-          featured: photo.featured || false,
+          title: p.title || "",
+          description: p.description || "",
+          category: p.category || "",
+          imageUrl: p.imageUrl || "",
+          imagePublicId: p.imagePublicId || "",
+          collectionId: p.collectionId || "",
+          featured: p.featured || false,
         });
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setFetching(false);
-      }
-    };
-    load();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setFetching(false));
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setForm((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setUploading(true);
     setError(null);
+
     try {
-      const res = await fetch(`/api/photos/${id}`, {
+      let imageUrl = form.imageUrl;
+      let imagePublicId = form.imagePublicId;
+
+      // ── Step 1: upload new image if admin selected one ──
+      if (imageFile) {
+        const fd = new FormData();
+        fd.append("image", imageFile);
+
+        const uploadRes = await fetch("/api/upload/single", {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok)
+          throw new Error(uploadData.message || "Image upload failed.");
+
+        // Use new Cloudinary values — controller will delete old asset
+        imageUrl = uploadData.data.imageUrl;
+        imagePublicId = uploadData.data.imagePublicId;
+      }
+
+      // ── Step 2: update photo document in MongoDB ──
+      const saveRes = await fetch(`/api/photos/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          category: form.category,
+          imageUrl,
+          imagePublicId,
+          collectionId: form.collectionId || null,
+          featured: form.featured,
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const saveData = await saveRes.json();
+      if (!saveRes.ok)
+        throw new Error(saveData.message || "Failed to update photo.");
+
+      toast.success("Photo updated successfully.");
       navigate("/admin/photos");
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
 
-  const inputStyle = {
-    width: "100%",
-    background: "#fff",
-    border: "1px solid rgba(0,0,0,0.1)",
-    padding: "11px 14px",
-    color: "#1a1a1a",
-    fontFamily: "Montserrat, sans-serif",
-    fontSize: "13px",
-    fontWeight: 300,
-    outline: "none",
-    transition: "border-color 0.2s",
-  };
-
-  const labelStyle = {
-    display: "block",
-    fontSize: "9px",
-    letterSpacing: "0.3em",
-    textTransform: "uppercase",
-    color: "rgba(0,0,0,0.4)",
-    marginBottom: "10px",
-    fontFamily: "Montserrat, sans-serif",
-    fontWeight: 400,
-  };
+  const LabelEl = ({ children }) => (
+    <label
+      style={{
+        display: "block",
+        fontSize: "9px",
+        letterSpacing: "0.28em",
+        textTransform: "uppercase",
+        color: "rgba(0,0,0,0.38)",
+        fontFamily: "Montserrat, sans-serif",
+        fontWeight: 400,
+        marginBottom: "9px",
+      }}
+    >
+      {children}
+    </label>
+  );
 
   if (fetching)
     return (
       <AdminLayout title="Edit Photo">
         <p
           style={{
-            color: "rgba(0,0,0,0.35)",
+            color: "rgba(0,0,0,0.3)",
             fontSize: "12px",
             fontFamily: "Montserrat, sans-serif",
           }}
@@ -126,103 +168,107 @@ const EditPhoto = () => {
 
   return (
     <AdminLayout title="Edit Photo">
-      <div style={{ maxWidth: "600px" }}>
-        <div style={{ marginBottom: "28px" }}>
-          <BtnGhost label="Back to Photos" to="/admin/photos" />
+      <div style={{ maxWidth: "560px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <BtnGhost label="← Photos" to="/admin/photos" />
         </div>
 
-        {/* Current image preview */}
-        {form.imageUrl && (
-          <img
-            src={form.imageUrl}
-            alt="Current"
-            style={{
-              width: "100%",
-              maxHeight: "260px",
-              objectFit: "cover",
-              objectPosition: "center",
-              display: "block",
-              marginBottom: "28px",
-            }}
-          />
-        )}
-
         <form onSubmit={handleSubmit}>
-          {[
-            { name: "title", label: "Title", type: "text", required: true },
-            {
-              name: "category",
-              label: "Category",
-              type: "text",
-              required: true,
-            },
-            {
-              name: "imageUrl",
-              label: "Image URL",
-              type: "text",
-              required: true,
-            },
-          ].map(({ name, label, type, required }) => (
-            <div key={name} style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>{label}</label>
-              <input
-                style={inputStyle}
-                type={type}
-                name={name}
-                value={form[name]}
-                onChange={handleChange}
-                required={required}
-                onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
-              />
-            </div>
-          ))}
+          {/*
+            ImageUploader:
+            - preview={form.imageUrl} shows existing Cloudinary image on load
+            - onChange sets imageFile — new upload only happens on submit
+            - If admin doesn't touch this, imageFile stays null and existing URL is reused
+          */}
+          <ImageUploader
+            label="Photo"
+            preview={form.imageUrl}
+            onChange={(file) => setImageFile(file)}
+          />
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>Description</label>
-            <textarea
-              style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
-              name="description"
-              value={form.description}
+          {imageFile && (
+            <p
+              style={{
+                fontSize: "10px",
+                color: "rgba(0,0,0,0.4)",
+                fontFamily: "Montserrat, sans-serif",
+                marginTop: "-12px",
+                marginBottom: "16px",
+                letterSpacing: "0.04em",
+              }}
+            >
+              New image selected — will upload on save.
+            </p>
+          )}
+
+          {/* Title */}
+          <div style={{ marginBottom: "18px" }}>
+            <LabelEl>Title</LabelEl>
+            <input
+              className="admin-input"
+              type="text"
+              name="title"
+              value={form.title}
               onChange={handleChange}
-              onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
+              required
             />
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>
-              Project (leave empty for Commissions)
-            </label>
+          {/* Category */}
+          <div style={{ marginBottom: "18px" }}>
+            <LabelEl>Category</LabelEl>
+            <input
+              className="admin-input"
+              type="text"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div style={{ marginBottom: "18px" }}>
+            <LabelEl>Description</LabelEl>
+            <textarea
+              className="admin-input admin-textarea"
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Project */}
+          <div style={{ marginBottom: "18px" }}>
+            <LabelEl>Project (leave empty → Commissions)</LabelEl>
             <select
-              style={{ ...inputStyle, cursor: "pointer" }}
+              className="admin-input admin-select"
               name="collectionId"
               value={form.collectionId}
               onChange={handleChange}
-              onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
             >
-              <option value="">No project — Commissions gallery</option>
-              {collections.map((col) => (
-                <option key={col._id} value={col._id}>
-                  {col.name}
+              <option value="">No project — Commissions</option>
+              {collections.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Featured */}
           <div
             style={{
-              marginBottom: "28px",
+              marginBottom: "24px",
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "10px",
             }}
           >
             <input
               type="checkbox"
-              name="featured"
               id="featured"
+              name="featured"
               checked={form.featured}
               onChange={handleChange}
               style={{
@@ -236,11 +282,11 @@ const EditPhoto = () => {
               htmlFor="featured"
               style={{
                 fontSize: "11px",
-                color: "rgba(0,0,0,0.5)",
+                color: "rgba(0,0,0,0.45)",
                 fontFamily: "Montserrat, sans-serif",
                 fontWeight: 300,
                 cursor: "pointer",
-                letterSpacing: "0.05em",
+                letterSpacing: "0.04em",
               }}
             >
               Feature on homepage
@@ -248,40 +294,21 @@ const EditPhoto = () => {
           </div>
 
           {error && (
-            <p
-              style={{
-                fontSize: "11px",
-                color: "#c0392b",
-                marginBottom: "16px",
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
+            <div className="admin-error" style={{ marginBottom: "14px" }}>
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
-            disabled={loading}
-            style={{
-              fontSize: "10px",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "#fff",
-              background: loading ? "rgba(0,0,0,0.25)" : "#1a1a1a",
-              border: "none",
-              padding: "13px 36px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "Montserrat, sans-serif",
-              fontWeight: 400,
-              transition: "opacity 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.opacity = "0.75";
-            }}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            disabled={uploading}
+            className="admin-btn-primary"
           >
-            {loading ? "Saving..." : "Save Changes →"}
+            {uploading
+              ? imageFile
+                ? "Uploading & saving..."
+                : "Saving..."
+              : "Save Changes →"}
           </button>
         </form>
       </div>

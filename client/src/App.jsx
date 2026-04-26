@@ -13,6 +13,7 @@ import NotFound from "@/pages/NotFound";
 import Images from "@/pages/Images";
 import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
 import Login from "./admin/pages/Login";
+import Register from "./admin/pages/Register";
 import Dashboard from "./admin/pages/Dashboard";
 import AdminProjects from "./admin/pages/AdminProjects";
 import NewProject from "./admin/pages/NewProject";
@@ -22,6 +23,7 @@ import NewPhoto from "./admin/pages/NewPhoto";
 import EditPhoto from "./admin/pages/EditPhoto";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 import useScrollToTop from "./hooks/useScrollToTop";
+import { Toaster } from "react-hot-toast";
 
 const AppRoutes = () => {
   useScrollToTop();
@@ -31,6 +33,7 @@ const AppRoutes = () => {
       {/* {useScrollToTop()} */}
       {/* ── Admin routes — no Navbar/Footer ── */}
       <Route path="/admin/login" element={<Login />} />
+      <Route path="/admin/register" element={<Register />} />
       <Route
         path="/admin"
         element={<Navigate to="/admin/dashboard" replace />}
@@ -124,6 +127,20 @@ const App = () => {
     <ThemeProvider>
       <AdminAuthProvider>
         <BrowserRouter>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                fontFamily: "Montserrat, sans-serif",
+                fontSize: "12px",
+                fontWeight: 300,
+                letterSpacing: "0.04em",
+                background: "#1a1a1a",
+                color: "#fff",
+                borderRadius: 0,
+              },
+            }}
+          />
           <AppRoutes />
         </BrowserRouter>
       </AdminAuthProvider>

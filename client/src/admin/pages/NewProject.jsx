@@ -5,11 +5,18 @@
  * Submits to POST /api/collections.
  * Auto-generates slug from name.
  */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/admin/components/AdminLayout";
+import ImageUploader from "@/admin/components/ImageUploader";
+import MultiImageUploader from "@/admin/components/MultiImageUploader";
 import BtnGhost from "@/components/ui/BtnGhost";
+
+const toSlug = (s) =>
+  s
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -18,26 +25,27 @@ const NewProject = () => {
     slug: "",
     description: "",
     coverImage: "",
+    coverPublicId: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [created, setCreated] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [addedCount, setAddedCount] = useState(0);
+  const [photoErr, setPhotoErr] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
+    setForm((p) => ({
+      ...p,
       [name]: value,
-      ...(name === "name" && {
-        slug: value
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, ""),
-      }),
+      ...(name === "name" && { slug: toSlug(value) }),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.coverImage) return setError("Please upload a cover image.");
     setLoading(true);
     setError(null);
     try {
@@ -49,7 +57,7 @@ const NewProject = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      navigate("/admin/projects");
+      setCreated(data.data || data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,123 +65,234 @@ const NewProject = () => {
     }
   };
 
-  const inputStyle = {
-    width: "100%",
-    background: "#fff",
-    border: "1px solid rgba(0,0,0,0.1)",
-    padding: "11px 14px",
-    color: "#1a1a1a",
-    fontFamily: "Montserrat, sans-serif",
-    fontSize: "13px",
-    fontWeight: 300,
-    outline: "none",
-    transition: "border-color 0.2s",
+  const handlePhotos = async (uploaded) => {
+    if (!created) return;
+    setSaving(true);
+    setPhotoErr(null);
+    const id = created._id || created.id;
+    try {
+      const results = await Promise.all(
+        uploaded.map(({ url, publicId }) =>
+          fetch("/api/photos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              title: form.name,
+              category: "Uncategorised",
+              imageUrl: url,
+              imagePublicId: publicId, 
+              collectionId: id,
+              featured: false,
+            }),
+          }).then((r) => r.json()),
+        ),
+      );
+      const ok = results.filter((r) => r.success).length;
+      setAddedCount((p) => p + ok);
+      if (ok < uploaded.length)
+        setPhotoErr(`${uploaded.length - ok} photo(s) failed to save.`);
+    } catch (err) {
+      setPhotoErr(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const labelStyle = {
-    display: "block",
-    fontSize: "9px",
-    letterSpacing: "0.3em",
-    textTransform: "uppercase",
-    color: "rgba(0,0,0,0.4)",
-    marginBottom: "10px",
-    fontFamily: "Montserrat, sans-serif",
-    fontWeight: 400,
-  };
+  const Field = ({ name, label, placeholder, required, hint }) => (
+    <div style={{ marginBottom: "20px" }}>
+      <label
+        style={{
+          display: "block",
+          fontSize: "9px",
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: "rgba(0,0,0,0.38)",
+          fontFamily: "Montserrat, sans-serif",
+          fontWeight: 400,
+          marginBottom: "9px",
+        }}
+      >
+        {label}
+        {hint && (
+          <span
+            style={{
+              textTransform: "none",
+              letterSpacing: 0,
+              opacity: 0.55,
+              fontSize: "8px",
+              fontWeight: 300,
+            }}
+          >
+            {" "}
+            — {hint}
+          </span>
+        )}
+      </label>
+      <input
+        className="admin-input"
+        type="text"
+        name={name}
+        value={form[name]}
+        onChange={handleChange}
+        placeholder={placeholder}
+        required={required}
+      />
+    </div>
+  );
 
+  /* ── Step 2: Add photos ── */
+  if (created)
+    return (
+      <AdminLayout title="Add Photos">
+        <div style={{ maxWidth: "680px" }}>
+          <div style={{ marginBottom: "28px" }}>
+            <p
+              style={{
+                fontFamily: "Cormorant Garamond, Georgia, serif",
+                fontSize: "22px",
+                fontWeight: 300,
+                fontStyle: "italic",
+                color: "#1a1a1a",
+                marginBottom: "8px",
+              }}
+            >
+              "{form.name}" created.
+            </p>
+            <p
+              style={{
+                fontSize: "11px",
+                color: "rgba(0,0,0,0.38)",
+                fontFamily: "Montserrat, sans-serif",
+                lineHeight: 1.8,
+                fontWeight: 300,
+              }}
+            >
+              Add photos to this project now, or skip and add them later.
+            </p>
+          </div>
+
+          <MultiImageUploader onUpload={handlePhotos} />
+
+          {saving && (
+            <p
+              style={{
+                fontSize: "10px",
+                color: "rgba(0,0,0,0.38)",
+                fontFamily: "Montserrat, sans-serif",
+                marginTop: "6px",
+              }}
+            >
+              Saving...
+            </p>
+          )}
+          {photoErr && (
+            <div className="admin-error" style={{ marginTop: "8px" }}>
+              {photoErr}
+            </div>
+          )}
+          {addedCount > 0 && !saving && (
+            <p
+              style={{
+                fontSize: "10px",
+                color: "#27ae60",
+                fontFamily: "Montserrat, sans-serif",
+                marginTop: "6px",
+              }}
+            >
+              {addedCount} photo{addedCount !== 1 ? "s" : ""} added.
+            </p>
+          )}
+
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              marginTop: "28px",
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              onClick={() => navigate("/admin/projects")}
+              className="admin-btn-primary"
+            >
+              Done — View Projects
+            </button>
+            <BtnGhost
+              label="Edit project"
+              to={`/admin/projects/${created._id || created.id}/edit`}
+            />
+          </div>
+        </div>
+      </AdminLayout>
+    );
+
+  /* ── Step 1: Create project ── */
   return (
     <AdminLayout title="New Project">
-      <div style={{ maxWidth: "600px" }}>
-        <div style={{ marginBottom: "28px" }}>
-          <BtnGhost label="Back to Projects" to="/admin/projects" />
+      <div style={{ maxWidth: "560px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <BtnGhost label="← Projects" to="/admin/projects" />
         </div>
 
         <form onSubmit={handleSubmit}>
-          {[
-            {
-              name: "name",
-              label: "Project Name",
-              placeholder: "The Mist & the Pines",
-              type: "text",
-              required: true,
-            },
-            {
-              name: "slug",
-              label: "Slug",
-              placeholder: "the-mist-and-the-pines",
-              type: "text",
-              required: true,
-            },
-            {
-              name: "coverImage",
-              label: "Cover Image URL",
-              placeholder: "https://...",
-              type: "text",
-              required: true,
-            },
-          ].map(({ name, label, placeholder, type, required }) => (
-            <div key={name} style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>{label}</label>
-              <input
-                style={inputStyle}
-                type={type}
-                name={name}
-                value={form[name]}
-                onChange={handleChange}
-                placeholder={placeholder}
-                required={required}
-                onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
-              />
-            </div>
-          ))}
-
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>Description</label>
+          <ImageUploader
+            label="Cover Image"
+            onUpload={({ imageUrl, imagePublicId }) =>
+              setForm((p) => ({
+                ...p,
+                coverImage: imageUrl,
+                coverPublicId: imagePublicId,
+              }))
+            }
+          />
+          <Field
+            name="name"
+            label="Project Name"
+            placeholder="The Mist & the Pines"
+            required
+          />
+          <Field
+            name="slug"
+            label="Slug"
+            placeholder="the-mist-and-the-pines"
+            required
+            hint="auto-generated from name"
+          />
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "9px",
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: "rgba(0,0,0,0.38)",
+                fontFamily: "Montserrat, sans-serif",
+                fontWeight: 400,
+                marginBottom: "9px",
+              }}
+            >
+              Description
+            </label>
             <textarea
-              style={{ ...inputStyle, resize: "vertical", minHeight: "90px" }}
+              className="admin-input admin-textarea"
               name="description"
               value={form.description}
               onChange={handleChange}
-              placeholder="A brief description of this project..."
-              onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
+              placeholder="A short description..."
             />
           </div>
 
           {error && (
-            <p
-              style={{
-                fontSize: "11px",
-                color: "#c0392b",
-                marginBottom: "16px",
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
+            <div className="admin-error" style={{ marginBottom: "16px" }}>
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            style={{
-              fontSize: "10px",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "#fff",
-              background: loading ? "rgba(0,0,0,0.25)" : "#1a1a1a",
-              border: "none",
-              padding: "13px 36px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "Montserrat, sans-serif",
-              fontWeight: 400,
-              transition: "opacity 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.opacity = "0.75";
-            }}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            className="admin-btn-primary"
           >
             {loading ? "Creating..." : "Create Project →"}
           </button>

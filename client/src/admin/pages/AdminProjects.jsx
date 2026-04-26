@@ -10,18 +10,18 @@ import AdminLayout from "@/admin/components/AdminLayout";
 import AdminTable from "@/admin/components/AdminTable";
 import useFetch from "@/hooks/useFetch";
 
-const columns = [
+const COLS = [
   {
     key: "coverImage",
     label: "Cover",
-    render: (val) =>
-      val ? (
+    render: (v) =>
+      v ? (
         <img
-          src={val}
-          alt="cover"
+          src={v}
+          alt=""
           style={{
-            width: "52px",
-            height: "36px",
+            width: "48px",
+            height: "34px",
             objectFit: "cover",
             display: "block",
           }}
@@ -29,8 +29,8 @@ const columns = [
       ) : (
         <div
           style={{
-            width: "52px",
-            height: "36px",
+            width: "48px",
+            height: "34px",
             background: "rgba(0,0,0,0.06)",
           }}
         />
@@ -41,91 +41,71 @@ const columns = [
   {
     key: "photoCount",
     label: "Photos",
-    render: (val) => (
-      <span style={{ color: "rgba(0,0,0,0.4)" }}>{val ?? 0}</span>
-    ),
+    render: (v) => <span style={{ color: "rgba(0,0,0,0.38)" }}>{v ?? 0}</span>,
   },
 ];
 
 const AdminProjects = () => {
   const { data, loading, error, refetch } = useFetch("/api/collections");
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState(null);
-
   const projects = data?.data || [];
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this project? This cannot be undone.")) return;
-    setDeleting(id);
-    try {
-      await fetch(`/api/collections/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      refetch();
-    } catch (err) {
-      console.error("Delete failed:", err.message);
-    } finally {
-      setDeleting(null);
-    }
+  const del = async (id) => {
+    if (!window.confirm("Delete this project permanently?")) return;
+    await fetch(`/api/collections/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    refetch();
   };
 
   return (
     <AdminLayout title="Projects">
+      {/* Header row */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "28px",
+          marginBottom: "24px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
         <p
           style={{
             fontSize: "11px",
-            color: "rgba(0,0,0,0.35)",
+            color: "rgba(0,0,0,0.32)",
             fontFamily: "Montserrat, sans-serif",
             fontWeight: 300,
           }}
         >
-          {projects.length} project{projects.length !== 1 ? "s" : ""}
+          {loading
+            ? "..."
+            : `${projects.length} project${projects.length !== 1 ? "s" : ""}`}
         </p>
         <button
           onClick={() => navigate("/admin/projects/new")}
-          style={{
-            fontSize: "10px",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "#fff",
-            background: "#1a1a1a",
-            border: "none",
-            padding: "11px 24px",
-            cursor: "pointer",
-            fontFamily: "Montserrat, sans-serif",
-            fontWeight: 400,
-            transition: "opacity 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          className="admin-btn-primary"
         >
           New Project
         </button>
       </div>
 
       {error && (
-        <p style={{ color: "#c0392b", fontSize: "12px", marginBottom: "16px" }}>
-          Failed to load projects.
-        </p>
+        <div className="admin-error" style={{ marginBottom: "16px" }}>
+          {error}
+        </div>
       )}
 
-      <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
+      <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.07)" }}>
         <AdminTable
-          columns={columns}
+          columns={COLS}
           rows={projects}
           loading={loading}
           onEdit={(id) => navigate(`/admin/projects/${id}/edit`)}
-          onDelete={handleDelete}
-          emptyMessage="No projects yet. Create your first one."
+          onDelete={del}
+          emptyMessage="No projects yet — create your first one."
         />
       </div>
     </AdminLayout>

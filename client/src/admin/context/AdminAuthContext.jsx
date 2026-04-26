@@ -15,20 +15,13 @@ export const AdminAuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await fetch("/api/admin/me", { credentials: "include" });
-        if (res.ok) {
-          const data = await res.json();
-          setAdmin(data.data);
-        }
-      } catch {
-        // no active session
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkSession();
+    fetch("/api/admin/me", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setAdmin(data.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (username, password) => {
@@ -41,7 +34,6 @@ export const AdminAuthProvider = ({ children }) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed.");
     setAdmin(data.data);
-    return data;
   };
 
   const logout = async () => {
@@ -60,8 +52,7 @@ export const AdminAuthProvider = ({ children }) => {
 };
 
 export const useAdminAuth = () => {
-  const context = useContext(AdminAuthContext);
-  if (!context)
-    throw new Error("useAdminAuth must be used within AdminAuthProvider");
-  return context;
+  const ctx = useContext(AdminAuthContext);
+  if (!ctx) throw new Error("useAdminAuth must be inside AdminAuthProvider");
+  return ctx;
 };

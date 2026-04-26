@@ -7,6 +7,7 @@ import session from "express-session";
 import adminRoute from "./src/routes/admin.route.js";
 import contact_route from "./src/routes/contact.route.js";
 import { MongoStore } from "connect-mongo";
+import upload_router from "./src/routes/upload.route.js";
 
 const app = express();
 app.use(
@@ -44,6 +45,7 @@ app.use("/api/photos", photo_router);
 app.use("/api/collections", collection_route);
 app.use("/api/posts", post_route);
 app.use("/api/contact", contact_route)
+app.use("/api/upload", upload_router)
 
 // ── Health check ──
 app.get("/api/health", (req, res) => {

@@ -7,6 +7,7 @@ export const create = async (photoData) => {
     description: photoData.description,
     category: photoData.category,
     imageUrl: photoData.imageUrl,
+    imagePublicId: photoData.imagePublicId,
     collectionId: photoData.collectionId,
     featured: photoData.featured,
     createdAt: new Date(),
@@ -41,6 +42,7 @@ export const updateOne = async (id, data) => {
   if (data.description !== undefined) updates.description = data.description;
   if (data.category) updates.category = data.category;
   if (data.imageUrl) updates.imageUrl = data.imageUrl;
+  if (data.imagePublicId) updates.imagePublicId = data.imagePublicId;
   if (data.collectionId !== undefined) updates.collectionId = data.collectionId;
   if (data.featured !== undefined) updates.featured = data.featured;
 

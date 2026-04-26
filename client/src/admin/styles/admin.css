@@ -1,0 +1,277 @@
+/* ══════════════════════════════════════════
+   Admin CSS — global styles for admin section
+   Loaded only for admin routes via AdminLayout
+══════════════════════════════════════════ */
+
+.admin-root {
+  --admin-bg: #fafaf8;
+  --admin-surface: #ffffff;
+  --admin-border: rgba(0, 0, 0, 0.08);
+  --admin-border-dark: rgba(0, 0, 0, 0.16);
+  --admin-text: #1a1a1a;
+  --admin-muted: rgba(0, 0, 0, 0.38);
+  --admin-faint: rgba(0, 0, 0, 0.055);
+  --admin-danger: #c0392b;
+  --admin-danger-bg: rgba(192, 57, 43, 0.06);
+  --admin-success: #27ae60;
+  --admin-sidebar-w: 220px;
+  --admin-topbar-h: 56px;
+  --admin-mobile-bar-h: 52px;
+  --admin-sans: 'Montserrat', sans-serif;
+  --admin-serif: 'Cormorant Garamond', Georgia, serif;
+  --admin-transition: 0.2s ease;
+
+  font-family: var(--admin-sans);
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+}
+
+/* ── Typography helpers ── */
+.admin-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  font-family: var(--admin-sans);
+  font-weight: 400;
+}
+
+.admin-serif-title {
+  font-family: var(--admin-serif);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--admin-text);
+}
+
+/* ── Form elements ── */
+.admin-input {
+  width: 100%;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  padding: 10px 14px;
+  color: var(--admin-text);
+  font-family: var(--admin-sans);
+  font-size: 13px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color var(--admin-transition);
+  border-radius: 0;
+  appearance: none;
+}
+
+.admin-input:focus {
+  border-color: var(--admin-text);
+}
+
+.admin-input::placeholder {
+  color: rgba(0, 0, 0, 0.22);
+}
+
+.admin-textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+
+.admin-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(0,0,0,0.3)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* ── Buttons ── */
+.admin-btn-primary {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--admin-text);
+  border: none;
+  padding: 12px 28px;
+  cursor: pointer;
+  font-family: var(--admin-sans);
+  font-weight: 400;
+  transition: opacity var(--admin-transition);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-btn-primary:hover:not(:disabled) {
+  opacity: 0.72;
+}
+
+.admin-btn-primary:disabled {
+  background: rgba(0, 0, 0, 0.22);
+  cursor: not-allowed;
+}
+
+.admin-btn-ghost {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: none;
+  border: 1px solid var(--admin-border);
+  padding: 10px 22px;
+  cursor: pointer;
+  font-family: var(--admin-sans);
+  font-weight: 300;
+  transition: color var(--admin-transition), border-color var(--admin-transition);
+  white-space: nowrap;
+}
+
+.admin-btn-ghost:hover {
+  color: var(--admin-text);
+  border-color: var(--admin-border-dark);
+}
+
+.admin-btn-link {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--admin-sans);
+  font-weight: 300;
+  padding: 0;
+  transition: color var(--admin-transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-btn-link:hover {
+  color: var(--admin-text);
+}
+
+.admin-btn-danger {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--admin-sans);
+  font-weight: 300;
+  padding: 0;
+  transition: color var(--admin-transition);
+}
+
+.admin-btn-danger:hover {
+  color: var(--admin-danger);
+}
+
+/* ── Cards ── */
+.admin-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  padding: 28px;
+}
+
+/* ── Divider ── */
+.admin-divider {
+  height: 1px;
+  background: var(--admin-border);
+  margin: 28px 0;
+}
+
+/* ── Error / success banners ── */
+.admin-error {
+  font-size: 11px;
+  color: var(--admin-danger);
+  font-family: var(--admin-sans);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  background: var(--admin-danger-bg);
+  border-left: 2px solid var(--admin-danger);
+}
+
+.admin-success {
+  font-size: 11px;
+  color: var(--admin-success);
+  font-family: var(--admin-sans);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  background: rgba(39, 174, 96, 0.06);
+  border-left: 2px solid var(--admin-success);
+}
+
+/* ── Pulse animation for skeletons ── */
+@keyframes adminPulse {
+
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
+}
+
+.admin-skeleton {
+  animation: adminPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Grid helpers ── */
+.admin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.admin-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+/* ── Responsive breakpoints ── */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .admin-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .admin-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-card {
+    padding: 20px;
+  }
+
+  .admin-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 400px) {
+  .admin-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

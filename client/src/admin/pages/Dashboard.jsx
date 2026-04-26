@@ -9,7 +9,7 @@ import AdminLayout from "@/admin/components/AdminLayout";
 import StatCard from "@/admin/components/StatCard";
 import useFetch from "@/hooks/useFetch";
 
-const quickActions = [
+const QUICK = [
   { label: "New Project", to: "/admin/projects/new" },
   { label: "Upload Photo", to: "/admin/photos/new" },
   { label: "All Projects", to: "/admin/projects" },
@@ -17,38 +17,34 @@ const quickActions = [
 ];
 
 const Dashboard = () => {
-  const { data: photosData } = useFetch("/api/photos");
-  const { data: collectionsData } = useFetch("/api/collections");
+  const { data: pd } = useFetch("/api/photos");
+  const { data: cd } = useFetch("/api/collections");
 
-  const totalPhotos = photosData?.count ?? "—";
-  const totalProjects = collectionsData?.data?.length ?? "—";
-  const standalone =
-    photosData?.data?.filter((p) => !p.collectionId).length ?? "—";
+  const totalPhotos = pd?.count ?? "—";
+  const totalProjects = cd?.data?.length ?? "—";
+  const standalone = pd?.data?.filter((p) => !p.collectionId).length ?? "—";
 
   return (
     <AdminLayout title="Dashboard">
       {/* Stats */}
       <div
-        className="admin-stats"
+        className="dashboard-stats"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
           gap: "2px",
-          marginBottom: "40px",
+          marginBottom: "36px",
         }}
       >
         <StatCard
           label="Total Photos"
           value={totalPhotos}
-          sub="All uploaded images"
+          sub="All images"
+          accent
         />
+        <StatCard label="Projects" value={totalProjects} sub="Collections" />
         <StatCard
-          label="Projects"
-          value={totalProjects}
-          sub="Named collections"
-        />
-        <StatCard
-          label="Images"
+          label="Commissions"
           value={standalone}
           sub="Standalone photos"
         />
@@ -58,12 +54,12 @@ const Dashboard = () => {
       <div>
         <p
           style={{
-            fontSize: "9px",
+            fontSize: "8px",
             letterSpacing: "0.32em",
             textTransform: "uppercase",
-            color: "rgba(0,0,0,0.3)",
-            marginBottom: "16px",
+            color: "rgba(0,0,0,0.28)",
             fontFamily: "Montserrat, sans-serif",
+            marginBottom: "14px",
             display: "flex",
             alignItems: "center",
             gap: "10px",
@@ -71,36 +67,38 @@ const Dashboard = () => {
         >
           <span
             style={{
-              display: "inline-block",
-              width: "20px",
+              width: "16px",
               height: "1px",
-              background: "rgba(0,0,0,0.2)",
+              background: "rgba(0,0,0,0.18)",
+              display: "inline-block",
             }}
           />
           Quick Actions
         </p>
-
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {quickActions.map(({ label, to }) => (
+        <div
+          className="quick-actions"
+          style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+        >
+          {QUICK.map(({ label, to }) => (
             <Link
               key={label}
               to={to}
               style={{
                 fontSize: "10px",
-                letterSpacing: "0.18em",
+                letterSpacing: "0.16em",
                 textTransform: "uppercase",
                 color: "rgba(0,0,0,0.4)",
                 border: "1px solid rgba(0,0,0,0.1)",
-                padding: "11px 22px",
+                padding: "10px 20px",
                 textDecoration: "none",
                 fontFamily: "Montserrat, sans-serif",
                 fontWeight: 300,
-                transition: "color 0.2s, border-color 0.2s",
                 background: "#fff",
+                transition: "color 0.2s, border-color 0.2s",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = "#1a1a1a";
-                e.currentTarget.style.borderColor = "#1a1a1a";
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.28)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = "rgba(0,0,0,0.4)";
@@ -115,10 +113,11 @@ const Dashboard = () => {
 
       <style>{`
         @media (max-width: 900px) {
-          .admin-stats { grid-template-columns: 1fr 1fr !important; }
+          .dashboard-stats { grid-template-columns: 1fr 1fr !important; }
         }
-        @media (max-width: 600px) {
-          .admin-stats { grid-template-columns: 1fr !important; }
+        @media (max-width: 480px) {
+          .dashboard-stats { grid-template-columns: 1fr !important; }
+          .quick-actions a { flex: 1 1 calc(50% - 4px); text-align: center; }
         }
       `}</style>
     </AdminLayout>

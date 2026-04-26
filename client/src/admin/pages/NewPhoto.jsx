@@ -1,246 +1,224 @@
 /**
  * NewPhoto
  *
- * Upload a new photo.
- * Assigns to a project (optional) or leaves standalone for Commissions.
- * Submits to POST /api/photos.
+ * Owns the full upload + save flow:
+ *
+ * 1. ImageUploader previews the file and calls setImageFile(file)
+ * 2. On form submit:
+ *    a. POST /api/upload/single   — uploads file to Cloudinary
+ *    b. POST /api/photos          — saves photo doc to MongoDB with
+ *                                   imageUrl + imagePublicId from step a
+ * 3. Navigates to /admin/photos on success
  */
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AdminLayout from "@/admin/components/AdminLayout";
-import BtnGhost from "@/components/ui/BtnGhost";
-import useFetch from "@/hooks/useFetch";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import AdminLayout from '@/admin/components/AdminLayout'
+import ImageUploader from '@/admin/components/ImageUploader'
+import BtnGhost from '@/components/ui/BtnGhost'
+import useFetch from '@/hooks/useFetch'
 
 const NewPhoto = () => {
-  const navigate = useNavigate();
-  const { data: collectionsData } = useFetch("/api/collections");
-  const collections = collectionsData?.data || [];
+  const navigate = useNavigate()
+  const { data: cd } = useFetch('/api/collections')
+  const collections = cd?.data || []
 
+  const [imageFile, setImageFile] = useState(null)   // File object from ImageUploader
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    imageUrl: "",
-    collectionId: "",
-    featured: false,
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+    title:        '',
+    description:  '',
+    category:     '',
+    collectionId: '',
+    featured:     false,
+  })
+  const [uploading, setUploading] = useState(false)
+  const [error, setError]         = useState(null)
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  const handleChange = e => {
+    const { name, value, type, checked } = e.target
+    setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }))
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const handleSubmit = async e => {
+    e.preventDefault()
+
+    if (!imageFile) {
+      toast.error('Please select an image.')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+
     try {
-      const res = await fetch("/api/photos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      // ── Step 1: upload image to Cloudinary ──
+      const fd = new FormData()
+      fd.append('image', imageFile)
+
+      const uploadRes = await fetch('/api/upload/single', {
+        method:      'POST',
+        credentials: 'include',
+        body:        fd,
+      })
+      const uploadData = await uploadRes.json()
+      if (!uploadRes.ok) throw new Error(uploadData.message || 'Image upload failed.')
+
+      const imageUrl = uploadData.data.imageUrl;
+      const imagePublicId = uploadData.data.imagePublicId;
+
+      // ── Step 2: save photo document to MongoDB ──
+      const saveRes = await fetch('/api/photos', {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           ...form,
+          imageUrl,
+          imagePublicId,
           collectionId: form.collectionId || null,
         }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      navigate("/admin/photos");
+      })
+      const saveData = await saveRes.json()
+      if (!saveRes.ok) throw new Error(saveData.message || 'Failed to save photo.')
+
+      toast.success('Photo uploaded successfully.')
+      navigate('/admin/photos')
     } catch (err) {
-      setError(err.message);
+      setError(err.message)
+      toast.error(err.message)
     } finally {
-      setLoading(false);
+      setUploading(false)
     }
-  };
+  }
 
-  const inputStyle = {
-    width: "100%",
-    background: "#fff",
-    border: "1px solid rgba(0,0,0,0.1)",
-    padding: "11px 14px",
-    color: "#1a1a1a",
-    fontFamily: "Montserrat, sans-serif",
-    fontSize: "13px",
-    fontWeight: 300,
-    outline: "none",
-    transition: "border-color 0.2s",
-  };
-
-  const labelStyle = {
-    display: "block",
-    fontSize: "9px",
-    letterSpacing: "0.3em",
-    textTransform: "uppercase",
-    color: "rgba(0,0,0,0.4)",
-    marginBottom: "10px",
-    fontFamily: "Montserrat, sans-serif",
-    fontWeight: 400,
-  };
+  const LabelEl = ({ children }) => (
+    <label style={{
+      display: 'block',
+      fontSize: '9px',
+      letterSpacing: '0.28em',
+      textTransform: 'uppercase',
+      color: 'rgba(0,0,0,0.38)',
+      fontFamily: 'Montserrat, sans-serif',
+      fontWeight: 400,
+      marginBottom: '9px',
+    }}>
+      {children}
+    </label>
+  )
 
   return (
-    <AdminLayout title="Upload Photo">
-      <div style={{ maxWidth: "600px" }}>
-        <div style={{ marginBottom: "28px" }}>
-          <BtnGhost label="Back to Photos" to="/admin/photos" />
+    <AdminLayout title='Upload Photo'>
+      <div style={{ maxWidth: '560px' }}>
+
+        <div style={{ marginBottom: '24px' }}>
+          <BtnGhost label='← Photos' to='/admin/photos' />
         </div>
 
         <form onSubmit={handleSubmit}>
-          {[
-            {
-              name: "title",
-              label: "Title",
-              placeholder: "Into the Quiet Forest",
-              type: "text",
-              required: true,
-            },
-            {
-              name: "category",
-              label: "Category",
-              placeholder: "Landscape · Portrait · Documentary",
-              type: "text",
-              required: true,
-            },
-            {
-              name: "imageUrl",
-              label: "Image URL",
-              placeholder: "https://...",
-              type: "text",
-              required: true,
-            },
-          ].map(({ name, label, placeholder, type, required }) => (
-            <div key={name} style={{ marginBottom: "20px" }}>
-              <label style={labelStyle}>{label}</label>
-              <input
-                style={inputStyle}
-                type={type}
-                name={name}
-                value={form[name]}
-                onChange={handleChange}
-                placeholder={placeholder}
-                required={required}
-                onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
-              />
-            </div>
-          ))}
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>Description (optional)</label>
-            <textarea
-              style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
-              name="description"
-              value={form.description}
+          {/* Uploader — preview only, sets imageFile */}
+          <ImageUploader
+            label='Photo'
+            onChange={file => setImageFile(file)}
+          />
+
+          {/* Title */}
+          <div style={{ marginBottom: '18px' }}>
+            <LabelEl>Title</LabelEl>
+            <input
+              className='admin-input'
+              type='text'
+              name='title'
+              value={form.title}
               onChange={handleChange}
-              placeholder="Optional description..."
-              onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
+              placeholder='Into the Quiet Forest'
+              required
             />
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>
-              Project (leave empty for Commissions)
-            </label>
+          {/* Category */}
+          <div style={{ marginBottom: '18px' }}>
+            <LabelEl>Category</LabelEl>
+            <input
+              className='admin-input'
+              type='text'
+              name='category'
+              value={form.category}
+              onChange={handleChange}
+              placeholder='Landscape · Portrait · Documentary'
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div style={{ marginBottom: '18px' }}>
+            <LabelEl>Description (optional)</LabelEl>
+            <textarea
+              className='admin-input admin-textarea'
+              name='description'
+              value={form.description}
+              onChange={handleChange}
+              placeholder='Optional description...'
+            />
+          </div>
+
+          {/* Project */}
+          <div style={{ marginBottom: '18px' }}>
+            <LabelEl>Project (leave empty → Commissions gallery)</LabelEl>
             <select
-              style={{ ...inputStyle, cursor: "pointer" }}
-              name="collectionId"
+              className='admin-input admin-select'
+              name='collectionId'
               value={form.collectionId}
               onChange={handleChange}
-              onFocus={(e) => (e.target.style.borderColor = "#1a1a1a")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(0,0,0,0.1)")}
             >
-              <option value="">No project — Commissions gallery</option>
-              {collections.map((col) => (
-                <option key={col._id} value={col._id}>
-                  {col.name}
-                </option>
+              <option value=''>No project — Commissions</option>
+              {collections.map(c => (
+                <option key={c._id} value={c._id}>{c.name}</option>
               ))}
             </select>
           </div>
 
-          <div
-            style={{
-              marginBottom: "28px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
+          {/* Featured */}
+          <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <input
-              type="checkbox"
-              name="featured"
-              id="featured"
+              type='checkbox'
+              id='featured'
+              name='featured'
               checked={form.featured}
               onChange={handleChange}
-              style={{
-                width: "14px",
-                height: "14px",
-                accentColor: "#1a1a1a",
-                cursor: "pointer",
-              }}
+              style={{ width: '14px', height: '14px', accentColor: '#1a1a1a', cursor: 'pointer' }}
             />
-            <label
-              htmlFor="featured"
-              style={{
-                fontSize: "11px",
-                color: "rgba(0,0,0,0.5)",
-                fontFamily: "Montserrat, sans-serif",
-                fontWeight: 300,
-                cursor: "pointer",
-                letterSpacing: "0.05em",
-              }}
-            >
+            <label htmlFor='featured' style={{
+              fontSize: '11px',
+              color: 'rgba(0,0,0,0.45)',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 300,
+              cursor: 'pointer',
+              letterSpacing: '0.04em',
+            }}>
               Feature on homepage
             </label>
           </div>
 
           {error && (
-            <p
-              style={{
-                fontSize: "11px",
-                color: "#c0392b",
-                marginBottom: "16px",
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
+            <div className='admin-error' style={{ marginBottom: '14px' }}>
               {error}
-            </p>
+            </div>
           )}
 
           <button
-            type="submit"
-            disabled={loading}
-            style={{
-              fontSize: "10px",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "#fff",
-              background: loading ? "rgba(0,0,0,0.25)" : "#1a1a1a",
-              border: "none",
-              padding: "13px 36px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "Montserrat, sans-serif",
-              fontWeight: 400,
-              transition: "opacity 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.opacity = "0.75";
-            }}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            type='submit'
+            disabled={uploading}
+            className='admin-btn-primary'
           >
-            {loading ? "Uploading..." : "Upload Photo →"}
+            {uploading ? 'Uploading...' : 'Upload Photo →'}
           </button>
+
         </form>
       </div>
     </AdminLayout>
-  );
-};
+  )
+}
 
-export default NewPhoto;
+export default NewPhoto

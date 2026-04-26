@@ -10,54 +10,53 @@
  * - sub (string, optional)
  */
 
-const StatCard = ({ label, value, sub }) => {
-  return (
-    <div
+const StatCard = ({ label, value, sub, accent = false }) => (
+  <div
+    style={{
+      background: accent ? "#1a1a1a" : "#fff",
+      border: "1px solid rgba(0,0,0,0.08)",
+      padding: "24px 28px",
+    }}
+  >
+    <p
       style={{
-        background: "#fff",
-        border: "1px solid rgba(0,0,0,0.08)",
-        padding: "28px 32px",
+        fontSize: "8px",
+        letterSpacing: "0.32em",
+        textTransform: "uppercase",
+        color: accent ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.35)",
+        fontFamily: "Montserrat, sans-serif",
+        fontWeight: 400,
+        marginBottom: "14px",
       }}
     >
+      {label}
+    </p>
+    <p
+      style={{
+        fontFamily: "Cormorant Garamond, Georgia, serif",
+        fontSize: "44px",
+        fontWeight: 300,
+        color: accent ? "#fff" : "#1a1a1a",
+        lineHeight: 1,
+        marginBottom: "6px",
+      }}
+    >
+      {value ?? "—"}
+    </p>
+    {sub && (
       <p
         style={{
-          fontSize: "9px",
-          letterSpacing: "0.3em",
-          textTransform: "uppercase",
-          color: "rgba(0,0,0,0.35)",
-          marginBottom: "16px",
+          fontSize: "10px",
+          color: accent ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.28)",
           fontFamily: "Montserrat, sans-serif",
-          fontWeight: 400,
-        }}
-      >
-        {label}
-      </p>
-      <p
-        style={{
-          fontFamily: "Cormorant Garamond, Georgia, serif",
-          fontSize: "48px",
           fontWeight: 300,
-          color: "#1a1a1a",
-          lineHeight: 1,
-          marginBottom: "8px",
+          letterSpacing: "0.06em",
         }}
       >
-        {value ?? "—"}
+        {sub}
       </p>
-      {sub && (
-        <p
-          style={{
-            fontSize: "10px",
-            color: "rgba(0,0,0,0.3)",
-            letterSpacing: "0.08em",
-            fontFamily: "Montserrat, sans-serif",
-          }}
-        >
-          {sub}
-        </p>
-      )}
-    </div>
-  );
-};
+    )}
+  </div>
+);
 
 export default StatCard;

@@ -11,18 +11,18 @@ import AdminLayout from "@/admin/components/AdminLayout";
 import AdminTable from "@/admin/components/AdminTable";
 import useFetch from "@/hooks/useFetch";
 
-const columns = [
+const COLS = [
   {
     key: "imageUrl",
     label: "Image",
-    render: (val) =>
-      val ? (
+    render: (v) =>
+      v ? (
         <img
-          src={val}
+          src={v}
           alt=""
           style={{
-            width: "52px",
-            height: "36px",
+            width: "48px",
+            height: "34px",
             objectFit: "cover",
             display: "block",
           }}
@@ -30,8 +30,8 @@ const columns = [
       ) : (
         <div
           style={{
-            width: "52px",
-            height: "36px",
+            width: "48px",
+            height: "34px",
             background: "rgba(0,0,0,0.06)",
           }}
         />
@@ -42,33 +42,33 @@ const columns = [
   {
     key: "featured",
     label: "Featured",
-    render: (val) => (
+    render: (v) => (
       <span
         style={{
           fontSize: "9px",
-          letterSpacing: "0.15em",
+          color: v ? "#1a1a1a" : "rgba(0,0,0,0.25)",
+          letterSpacing: "0.12em",
           textTransform: "uppercase",
-          color: val ? "#1a1a1a" : "rgba(0,0,0,0.25)",
-          fontWeight: val ? 400 : 300,
+          fontWeight: v ? 500 : 300,
         }}
       >
-        {val ? "Yes" : "No"}
+        {v ? "Yes" : "No"}
       </span>
     ),
   },
   {
     key: "collectionId",
     label: "Type",
-    render: (val) => (
+    render: (v) => (
       <span
         style={{
           fontSize: "9px",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
           color: "rgba(0,0,0,0.35)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
         }}
       >
-        {val ? "Project" : "Commission"}
+        {v ? "Project" : "Commission"}
       </span>
     ),
   },
@@ -77,24 +77,15 @@ const columns = [
 const AdminPhotos = () => {
   const { data, loading, error, refetch } = useFetch("/api/photos/all?standalone=true");
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState(null);
-
   const photos = data?.data || [];
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this photo? This cannot be undone.")) return;
-    setDeleting(id);
-    try {
-      await fetch(`/api/photos/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      refetch();
-    } catch (err) {
-      console.error("Delete failed:", err.message);
-    } finally {
-      setDeleting(null);
-    }
+  const del = async (id) => {
+    if (!window.confirm("Delete this photo permanently?")) return;
+    await fetch(`/api/photos/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    refetch();
   };
 
   return (
@@ -104,55 +95,45 @@ const AdminPhotos = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "28px",
+          marginBottom: "24px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
         <p
           style={{
             fontSize: "11px",
-            color: "rgba(0,0,0,0.35)",
+            color: "rgba(0,0,0,0.32)",
             fontFamily: "Montserrat, sans-serif",
             fontWeight: 300,
           }}
         >
-          {photos.length} photo{photos.length !== 1 ? "s" : ""}
+          {loading
+            ? "..."
+            : `${photos.length} photo${photos.length !== 1 ? "s" : ""}`}
         </p>
         <button
           onClick={() => navigate("/admin/photos/new")}
-          style={{
-            fontSize: "10px",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "#fff",
-            background: "#1a1a1a",
-            border: "none",
-            padding: "11px 24px",
-            cursor: "pointer",
-            fontFamily: "Montserrat, sans-serif",
-            fontWeight: 400,
-            transition: "opacity 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          className="admin-btn-primary"
         >
           Upload Photo
         </button>
       </div>
 
       {error && (
-        <p style={{ color: "#c0392b", fontSize: "12px", marginBottom: "16px" }}>
-          Failed to load photos.
-        </p>
+        <div className="admin-error" style={{ marginBottom: "16px" }}>
+          {error}
+        </div>
       )}
 
-      <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
+      <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.07)" }}>
         <AdminTable
-          columns={columns}
+          columns={COLS}
           rows={photos}
           loading={loading}
           onEdit={(id) => navigate(`/admin/photos/${id}/edit`)}
-          onDelete={handleDelete}
-          emptyMessage="No photos yet. Upload your first one."
+          onDelete={del}
+          emptyMessage="No photos yet — upload your first one."
         />
       </div>
     </AdminLayout>
