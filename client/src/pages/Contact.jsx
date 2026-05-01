@@ -6,11 +6,14 @@
  */
 
 import SectionLabel from "@/components/ui/SectionLabel";
+import SEO from "@/components/SEO";
 import ContactSection from "@/components/contact/ContactSection";
 
 const Contact = () => {
   return (
     <>
+
+    <SEO title="Contact" description="Get in touch with Anthony Monday to discuss your photography project." />
       <div
       className="section-header"
         style={{

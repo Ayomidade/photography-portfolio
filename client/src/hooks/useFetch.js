@@ -11,7 +11,9 @@ const useFetch = (url) => {
     setError(null)
 
     try {
-      const res = await fetch(url)
+      const res = await fetch(
+        `https://photography-portfolio-k7o4.onrender.com${url}`,
+      );
       if (!res.ok) throw new Error(`Request failed with status ${res.status}`)
       const json = await res.json()
       setData(json)

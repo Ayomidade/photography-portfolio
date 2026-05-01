@@ -10,6 +10,8 @@ import { useAdminAuth } from "@/admin/context/AdminAuthContext";
 import "@/admin/styles/admin.css";
 
 const Login = () => {
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const { admin, login } = useAdminAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });

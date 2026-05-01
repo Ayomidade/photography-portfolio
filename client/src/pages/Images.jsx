@@ -13,6 +13,8 @@ import useFetch from "@/hooks/useFetch";
 import useLightbox from "@/hooks/useLightbox";
 import Lightbox from "@/components/gallery/Lightbox";
 import SectionLabel from "@/components/ui/SectionLabel";
+import SEO from "@/components/SEO";
+
 
 const getAspectRatio = (i) => {
   if (i === 0) return "16/9";
@@ -29,6 +31,7 @@ const Images = () => {
 
   return (
     <>
+      <SEO title="Images" description="A collection of standalone images by Anthony Monday." />
       {/* Page header */}
       <div
         className="section-header"

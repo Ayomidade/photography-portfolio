@@ -11,7 +11,9 @@
  * components don't need to call .json() themselves.
  */
 
-const BASE_URL = "/api";
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://photography-portfolio-k7o4.onrender.com/api";
 
 const handleResponse = async (res) => {
   const data = await res.json();

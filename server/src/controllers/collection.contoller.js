@@ -240,4 +240,4 @@ export const getCollectionPhotos = async (req, res) => {
     console.error("getCollectionPhotos error:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
-}
+};

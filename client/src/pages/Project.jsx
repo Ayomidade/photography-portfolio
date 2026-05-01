@@ -14,6 +14,7 @@ import PhotoCard from "@/components/gallery/PhotoCard";
 import Lightbox from "@/components/gallery/Lightbox";
 import BtnGhost from "@/components/ui/BtnGhost";
 import SectionLabel from "@/components/ui/SectionLabel";
+import SEO from "@/components/SEO";
 
 const Project = () => {
   const { slug } = useParams();
@@ -95,6 +96,7 @@ const Project = () => {
 
   return (
     <>
+    <SEO title={project.name} description={project.description} />
       {/* Header */}
       <div
         style={{

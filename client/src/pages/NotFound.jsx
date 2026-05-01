@@ -2,6 +2,7 @@
  * NotFound — 404 page, on-brand minimal style.
  */
 
+import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 
 const NotFound = () => {

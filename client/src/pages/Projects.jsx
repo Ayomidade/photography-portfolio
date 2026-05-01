@@ -7,10 +7,13 @@
 
 import SectionLabel from "@/components/ui/SectionLabel";
 import ProjectsGrid from "@/components/projects/ProjectsGrid";
+import SEO from "@/components/SEO";
 
 const Projects = () => {
   return (
     <>
+<SEO title="Projects" description="Explore Anthony Monday's photography portfolio showcasing editorial, corporate, and documentary work." />
+      
       <div
         className="section-header"
         style={{

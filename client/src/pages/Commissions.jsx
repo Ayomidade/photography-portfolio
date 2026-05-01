@@ -6,6 +6,7 @@
  */
 
 import SectionLabel from "@/components/ui/SectionLabel";
+import SEO from "@/components/SEO";
 import ContactForm from "@/components/contact/ContactForm";
 
 const commissionTypes = [
@@ -34,6 +35,8 @@ const commissionTypes = [
 const Commissions = () => {
   return (
     <>
+    <SEO title="Commissions" description="Explore Anthony Monday's commission services and get in touch to discuss your project." />
+      
       <div
         style={{
           background: "var(--black)",

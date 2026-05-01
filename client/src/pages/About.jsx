@@ -6,6 +6,7 @@
  */
 
 import SectionLabel from "@/components/ui/SectionLabel";
+import SEO from "@/components/SEO";
 
 const paragraphs = [
   `Born in Lagos, Nigeria. Anthony Monday is a visual storyteller who started his 
@@ -51,6 +52,11 @@ const About = () => {
 
   return (
     <>
+      <SEO
+        title="About Anthony Monday"
+        description="Learn more about Anthony Monday, a visual storyteller exploring personal and societal themes through his photography."
+      />
+
       <div
         className="about-page"
         style={{

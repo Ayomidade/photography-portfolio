@@ -14,8 +14,10 @@ export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const BASE_URL= import.meta.env.VITE_API_BASE_URL
+
   useEffect(() => {
-    fetch("/api/admin/me", { credentials: "include" })
+    fetch(`${BASE_URL}/admin/me`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data) setAdmin(data.data);
@@ -25,7 +27,7 @@ export const AdminAuthProvider = ({ children }) => {
   }, []);
 
   const login = async (username, password) => {
-    const res = await fetch("/api/admin/login", {
+    const res = await fetch(`${BASE_URL}/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -34,10 +36,11 @@ export const AdminAuthProvider = ({ children }) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Login failed.");
     setAdmin(data.data);
+
   };
 
   const logout = async () => {
-    await fetch("/api/admin/logout", {
+    await fetch(`${BASE_URL}/api/admin/logout`, {
       method: "POST",
       credentials: "include",
     });
