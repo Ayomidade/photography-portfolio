@@ -1,15 +1,21 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node.js server for handling user authentication, file uploads, and email notifications.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nodejs",
+    "express",
+    "authentication",
+    "file-upload",
+    "email"
+  ],
+  "author": "Samuel Michael",
   "license": "ISC",
   "type": "module",
   "dependencies": {

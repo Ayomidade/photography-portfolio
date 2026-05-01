@@ -1,15 +1,18 @@
 import express, { json, urlencoded } from "express";
 import cors from "cors";
+import { MongoStore } from "connect-mongo";
+import session from "express-session";
+
 import photo_router from "./src/routes/photos.route.js";
 import collection_route from "./src/routes/collection.route.js";
 import post_route from "./src/routes/post.route.js";
-import session from "express-session";
 import adminRoute from "./src/routes/admin.route.js";
 import contact_route from "./src/routes/contact.route.js";
-import { MongoStore } from "connect-mongo";
 import upload_router from "./src/routes/upload.route.js";
 
 const app = express();
+
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -35,6 +38,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24, // 24 hours (milliseconds)
     },
   }),
@@ -44,8 +48,8 @@ app.use("/api/admin", adminRoute);
 app.use("/api/photos", photo_router);
 app.use("/api/collections", collection_route);
 app.use("/api/posts", post_route);
-app.use("/api/contact", contact_route)
-app.use("/api/upload", upload_router)
+app.use("/api/contact", contact_route);
+app.use("/api/upload", upload_router);
 
 // ── Health check ──
 app.get("/api/health", (req, res) => {
