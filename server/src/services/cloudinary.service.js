@@ -1,10 +1,10 @@
 import streamifier from "streamifier";
-import { cloudinary } from "../config/cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
 // Upload single file
 export const uploadImageToCloudinary = (fileBuffer, filename) => {
   return new Promise((resolve, reject) => {
-    const stream = cloudinary .uploader.upload_stream(
+    const stream = cloudinary.uploader.upload_stream(
       {
         folder: "anthony-monday-photos",
         resource_type: "image",

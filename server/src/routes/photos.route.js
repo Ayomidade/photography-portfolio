@@ -8,7 +8,6 @@ import {
   updatePhoto,
 } from "../controllers/photos.controller.js";
 import { protect } from "../middlewares/auth.js";
-import { upload } from "../config/cloudinary.js";
 
 const photo_router = Router();
 

@@ -12,7 +12,7 @@ import {
   findCollectionById,
   increasePhotoCount,
 } from "../models/Collections.js";
-import { deleteImage } from "../config/cloudinary.js";
+import { deleteImageFromCloudinary } from "../services/cloudinary.service.js";
 
 // GET /api/photos
 export const getPhotos = async (req, res) => {
@@ -145,7 +145,7 @@ export const deletePhoto = async (req, res) => {
 
     // --- Delete from Cloudinary------
     if (photo.imagePublicId) {
-      await deleteImage(photo.imagePublicId);
+      await deleteImageFromCloudinary(photo.imagePublicId);
     }
 
     return res
@@ -240,7 +240,7 @@ export const updatePhoto = async (req, res) => {
 
     if (imageUrl && imageUrl !== photo.imageUrl && photo.imagePublicId) {
       // Delete the old image from Cloudinary
-      await deleteImage(photo.imagePublicId);
+      await deleteImageFromCloudinary(photo.imagePublicId);
     }
 
     // if collectionId is changing, adjust counts on both old and new collection

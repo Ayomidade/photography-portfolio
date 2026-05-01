@@ -11,4 +11,4 @@ cloudinary.config({
 });
 
 
-export { cloudinary };
+export default cloudinary;

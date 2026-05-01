@@ -7,8 +7,8 @@ import {
   findCollectionBySlug,
   updateCollection,
 } from "../models/Collections.js";
-import { deleteImage } from "../config/cloudinary.js";
 import { findPhotos } from "../models/Photos.js";
+import { deleteImageFromCloudinary } from "../services/cloudinary.service.js";
 
 // GET /api/collections
 export const getAllCollections = async (req, res) => {
@@ -146,7 +146,7 @@ export const editCollection = async (req, res) => {
       coverImage !== collection.coverImage &&
       collection.coverPublicId
     ) {
-      await deleteImage(collection.coverPublicId);
+      await deleteImageFromCloudinary(collection.coverPublicId);
     }
 
     await updateCollection(id, {
@@ -199,7 +199,7 @@ export const removeCollection = async (req, res) => {
     }
 
     if (collection.coverPublicId) {
-      await deleteImage(collection.coverPublicId);
+      await deleteImageFromCloudinary(collection.coverPublicId);
     }
     return res
       .status(200)
