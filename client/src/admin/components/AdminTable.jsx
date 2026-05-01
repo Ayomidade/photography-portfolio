@@ -206,7 +206,7 @@ const AdminTable = ({
             key={row._id}
             style={{
               borderBottom: "1px solid rgba(0,0,0,0.07)",
-              padding: "16px 0",
+              padding: "16px 10px",
               display: "flex",
               alignItems: "center",
               gap: "14px",
@@ -282,7 +282,7 @@ const AdminTable = ({
             </div>
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: "12px", flexShrink: 0 }}>
+            <div style={{ display: "flex", gap: "12px", flexShrink: 0, }}>
               {onEdit && (
                 <button
                   onClick={() => onEdit(row._id)}

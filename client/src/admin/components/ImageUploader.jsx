@@ -43,8 +43,9 @@ const ImageUploader = ({ onChange, preview: initialPreview = null, label = 'Imag
       return
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setError('Max file size is 15 MB.')
+    // Image size validation
+    if (file.size > 9 * 1024 * 1024) {
+      setError('Max file size is 9 MB.')
       return
     }
 
@@ -160,7 +161,7 @@ const ImageUploader = ({ onChange, preview: initialPreview = null, label = 'Imag
               fontFamily: 'Montserrat, sans-serif',
               letterSpacing: '0.05em',
             }}>
-              JPG · PNG · WEBP · Max 15 MB
+              JPG · PNG · WEBP · Max 9 MB
             </p>
           </div>
         )}

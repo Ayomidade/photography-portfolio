@@ -1,12 +1,26 @@
 /**
  * EditProject
  *
- * Pre-fills form from existing collection.
- * Submits to PATCH /api/collections/:id.
+ * Two-panel layout (collapses to single column on tablet/mobile):
+ *
+ * LEFT — Edit project details:
+ * - ImageUploader previews existing cover, sets coverFile if replaced
+ * - On submit:
+ * a. If coverFile set → POST /api/upload/single → new { url, publicId }
+ * (controller deletes old Cloudinary asset automatically)
+ * b. PATCH /api/collections/:id → MongoDB with updated fields
+ *
+ * RIGHT — Manage collection photos:
+ * - Shows existing photos grid with per-photo delete
+ * - MultiImageUploader previews new files, sets photoFiles[]
+ * - "Upload Photos" button:
+ * a. POST /api/upload/multiple → Cloudinary → [{ url, publicId }]
+ * b. POST /api/photos → one doc per image in MongoDB
  */
 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import AdminLayout from "@/admin/components/AdminLayout";
 import ImageUploader from "@/admin/components/ImageUploader";
 import MultiImageUploader from "@/admin/components/MultiImageUploader";
@@ -16,27 +30,34 @@ import useFetch from "@/hooks/useFetch";
 const EditProject = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // ── Project form state ──
   const [form, setForm] = useState({
     name: "",
     slug: "",
     description: "",
-    coverImage: "",
-    coverPublicId: "",
+    coverImage: "", // existing Cloudinary URL — shown as ImageUploader preview
+    coverPublicId: "", // existing public_id — sent if cover not replaced
   });
+  const [coverFile, setCoverFile] = useState(null); // File if admin picks new cover
   const [fetching, setFetching] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [photoErr, setPhotoErr] = useState(null);
-  const [addedCount, setAddedCount] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState(null);
 
+  // ── Photos state ──
   const {
     data: pd,
     loading: photosLoading,
     refetch: refetchPhotos,
-  } = useFetch(id ? `/api/photos?collectionId=${id}` : null);
-  const photos = pd?.data || [];
+  } = useFetch(id ? `/api/collections/photos/${id}` : null);
+  const existingPhotos = pd?.data || [];
 
+  const [photoFiles, setPhotoFiles] = useState([]); // File[] from MultiImageUploader
+  const [uploading, setUploading] = useState(false);
+  const [addedCount, setAddedCount] = useState(0);
+  const [photoError, setPhotoError] = useState(null);
+
+  // Load existing project on mount
   useEffect(() => {
     fetch(`/api/collections/${id}`, { credentials: "include" })
       .then((r) => r.json())
@@ -50,40 +71,109 @@ const EditProject = () => {
           coverPublicId: p.coverPublicId || "",
         });
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => setFormError(err.message))
       .finally(() => setFetching(false));
   }, [id]);
 
   const handleChange = (e) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
+  // ── Save project details ──
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setSubmitting(true);
+    setFormError(null);
+
     try {
-      const res = await fetch(`/api/collections/${id}`, {
+      let coverImage = form.coverImage;
+      let coverPublicId = form.coverPublicId;
+
+      // Upload new cover only if admin selected a new file
+      if (coverFile) {
+        const fd = new FormData();
+        fd.append("image", coverFile);
+
+        const uploadRes = await fetch("/api/upload/single", {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok)
+          throw new Error(uploadData.message || "Cover upload failed.");
+
+        // Controller will delete old Cloudinary asset when it sees coverImage changed
+        coverImage = uploadData.data.imageUrl;
+        coverPublicId = uploadData.data.imagePublicId;
+      }
+
+      const saveRes = await fetch(`/api/collections/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          slug: form.slug,
+          description: form.description,
+          coverImage,
+          coverPublicId,
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const saveData = await saveRes.json();
+      if (!saveRes.ok)
+        throw new Error(saveData.message || "Failed to update project.");
+
+      toast.success("Project updated.");
       navigate("/admin/projects");
     } catch (err) {
-      setError(err.message);
+      setFormError(err.message);
+      toast.error(err.message);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  const handlePhotos = async (uploaded) => {
-    setSaving(true);
-    setPhotoErr(null);
+  // ── Upload new photos to collection ──
+  const handleUploadPhotos = async () => {
+    if (!photoFiles.length) return;
+
+    setUploading(true);
+    setPhotoError(null);
+
     try {
+      // size validation handled in the image uploader
+      // const maxSize = 9 * 1024 * 1024;
+
+      // const validFiles = photoFiles.filter((f) => f.size <= maxSize);
+
+      // if (validFiles.length === 0) {
+      //   setPhotoError("All selected images exceed 9MB.");
+      //   toast.error("All selected images exceed 9MB.");
+      //   return;
+      // }
+
+      // if (validFiles.length !== photoFiles.length) {
+      //   toast.error("Some images were skipped (over 9MB).");
+      //   setPhotoError("Some images were skipped (over 9MB).")
+      // }
+
+      const fd = new FormData();
+      photoFiles.forEach((f) => fd.append("images", f));
+
+      const uploadRes = await fetch("/api/upload/multiple", {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      });
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok)
+        throw new Error(uploadData.message || "Photo upload failed.");
+
+      const uploaded = uploadData.data; // [{ url, publicId }]
+
+      // b. Save one photo doc per uploaded image
       const results = await Promise.all(
-        uploaded.map(({ url }) =>
+        uploaded.map(({ imageUrl, imagePublicId }) =>
           fetch("/api/photos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -91,48 +181,52 @@ const EditProject = () => {
             body: JSON.stringify({
               title: form.name,
               category: "Uncategorised",
-              imageUrl: url,
+              imageUrl: imageUrl,
+              imagePublicId: imagePublicId,
               collectionId: id,
               featured: false,
             }),
           }).then((r) => r.json()),
         ),
       );
-      const ok = results.filter((r) => r.success).length;
-      setAddedCount((p) => p + ok);
+
+      const saved = results.filter((r) => r.success).length;
+      const failed = results.length - saved;
+
+      setAddedCount((p) => p + saved);
+      setPhotoFiles([]); // clear queue
       refetchPhotos();
-      if (ok < uploaded.length)
-        setPhotoErr(`${uploaded.length - ok} photo(s) failed.`);
+
+      if (failed > 0) {
+        setPhotoError(`${failed} photo(s) failed to save.`);
+        toast.error(`${failed} photo(s) failed.`);
+      } else {
+        toast.success(`${saved} photo${saved !== 1 ? "s" : ""} added.`);
+      }
     } catch (err) {
-      setPhotoErr(err.message);
+      setPhotoError(err.message);
+      toast.error(err.message);
     } finally {
-      setSaving(false);
+      setUploading(false);
     }
   };
 
-  const deletePhoto = async (pid) => {
-    if (!window.confirm("Remove this photo?")) return;
-    await fetch(`/api/photos/${pid}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    refetchPhotos();
+  // ── Delete a single photo from collection ──
+  const handleDeletePhoto = async (photoId) => {
+    if (!window.confirm("Remove this photo? This cannot be undone.")) return;
+    try {
+      const res = await fetch(`/api/photos/${photoId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      toast.success("Photo removed.");
+      refetchPhotos();
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
-
-  if (fetching)
-    return (
-      <AdminLayout title="Edit Project">
-        <p
-          style={{
-            color: "rgba(0,0,0,0.3)",
-            fontSize: "12px",
-            fontFamily: "Montserrat, sans-serif",
-          }}
-        >
-          Loading...
-        </p>
-      </AdminLayout>
-    );
 
   const LabelEl = ({ children }) => (
     <label
@@ -151,6 +245,21 @@ const EditProject = () => {
     </label>
   );
 
+  if (fetching)
+    return (
+      <AdminLayout title="Edit Project">
+        <p
+          style={{
+            color: "rgba(0,0,0,0.3)",
+            fontSize: "12px",
+            fontFamily: "Montserrat, sans-serif",
+          }}
+        >
+          Loading...
+        </p>
+      </AdminLayout>
+    );
+
   return (
     <AdminLayout title="Edit Project">
       <div style={{ marginBottom: "20px" }}>
@@ -162,38 +271,70 @@ const EditProject = () => {
         style={{
           display: "grid",
           gridTemplateColumns: "480px 1fr",
-          gap: "40px",
+          gap: "48px",
           alignItems: "start",
         }}
       >
-        {/* LEFT — form */}
+        {/* ════════════════════════════
+            LEFT — project details form
+            ════════════════════════════ */}
         <div>
           <form onSubmit={handleSubmit}>
+            {/*
+              ImageUploader:
+              - preview={form.coverImage} shows existing Cloudinary cover
+              - onChange sets coverFile — upload only happens on submit
+              - If admin doesn't touch this, coverFile stays null and existing URL is reused
+            */}
             <ImageUploader
               label="Cover Image"
               preview={form.coverImage}
-              onUpload={({ imageUrl, imagePublicId }) =>
-                setForm((p) => ({
-                  ...p,
-                  coverImage: imageUrl,
-                  coverPublicId: imagePublicId,
-                }))
-              }
+              onChange={(file) => setCoverFile(file)}
             />
-            {["name", "slug"].map((name) => (
-              <div key={name} style={{ marginBottom: "18px" }}>
-                <LabelEl>{name === "name" ? "Project Name" : "Slug"}</LabelEl>
-                <input
-                  className="admin-input"
-                  type="text"
-                  name={name}
-                  value={form[name]}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            ))}
-            <div style={{ marginBottom: "22px" }}>
+
+            {coverFile && (
+              <p
+                style={{
+                  fontSize: "10px",
+                  color: "rgba(0,0,0,0.4)",
+                  fontFamily: "Montserrat, sans-serif",
+                  marginTop: "-12px",
+                  marginBottom: "16px",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                New cover selected — will upload on save.
+              </p>
+            )}
+
+            {/* Name */}
+            <div style={{ marginBottom: "18px" }}>
+              <LabelEl>Project Name</LabelEl>
+              <input
+                className="admin-input"
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* Slug */}
+            <div style={{ marginBottom: "18px" }}>
+              <LabelEl>Slug</LabelEl>
+              <input
+                className="admin-input"
+                type="text"
+                name="slug"
+                value={form.slug}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div style={{ marginBottom: "24px" }}>
               <LabelEl>Description</LabelEl>
               <textarea
                 className="admin-input admin-textarea"
@@ -202,22 +343,30 @@ const EditProject = () => {
                 onChange={handleChange}
               />
             </div>
-            {error && (
-              <div className="admin-error" style={{ marginBottom: "14px" }}>
-                {error}
+
+            {formError && (
+              <div className="admin-error" style={{ marginBottom: "16px" }}>
+                {formError}
               </div>
             )}
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="admin-btn-primary"
             >
-              {loading ? "Saving..." : "Save Changes →"}
+              {submitting
+                ? coverFile
+                  ? "Uploading & saving..."
+                  : "Saving..."
+                : "Save Changes →"}
             </button>
           </form>
         </div>
 
-        {/* RIGHT — photos */}
+        {/* ════════════════════════════
+            RIGHT — collection photos
+            ════════════════════════════ */}
         <div>
           <p
             style={{
@@ -231,21 +380,21 @@ const EditProject = () => {
             }}
           >
             Collection Photos
-            {photos.length > 0 && (
+            {existingPhotos.length > 0 && (
               <span style={{ color: "#1a1a1a", marginLeft: "8px" }}>
-                ({photos.length})
+                ({existingPhotos.length})
               </span>
             )}
           </p>
 
-          {/* Photo grid */}
+          {/* Existing photos grid */}
           {photosLoading ? (
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
                 gap: "3px",
-                marginBottom: "20px",
+                marginBottom: "24px",
               }}
             >
               {[...Array(6)].map((_, i) => (
@@ -256,23 +405,23 @@ const EditProject = () => {
                 />
               ))}
             </div>
-          ) : photos.length > 0 ? (
+          ) : existingPhotos.length > 0 ? (
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
                 gap: "3px",
-                marginBottom: "20px",
+                marginBottom: "24px",
               }}
             >
-              {photos.map((ph) => (
+              {existingPhotos.map((photo) => (
                 <div
-                  key={ph._id}
+                  key={photo._id}
                   style={{ position: "relative", aspectRatio: "1" }}
                 >
                   <img
-                    src={ph.imageUrl}
-                    alt={ph.title}
+                    src={photo.imageUrl}
+                    alt={photo.title}
                     style={{
                       width: "100%",
                       height: "100%",
@@ -281,13 +430,15 @@ const EditProject = () => {
                     }}
                   />
                   <button
-                    onClick={() => deletePhoto(ph._id)}
+                    type="button"
+                    onClick={() => handleDeletePhoto(photo._id)}
+                    title="Remove photo"
                     style={{
                       position: "absolute",
                       top: "3px",
                       right: "3px",
-                      width: "18px",
-                      height: "18px",
+                      width: "20px",
+                      height: "20px",
                       background: "rgba(0,0,0,0.65)",
                       color: "#fff",
                       border: "none",
@@ -296,6 +447,7 @@ const EditProject = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      fontFamily: "Montserrat, sans-serif",
                     }}
                   >
                     ✕
@@ -309,49 +461,78 @@ const EditProject = () => {
                 fontSize: "11px",
                 color: "rgba(0,0,0,0.28)",
                 fontFamily: "Montserrat, sans-serif",
-                marginBottom: "20px",
                 fontWeight: 300,
+                marginBottom: "24px",
+                letterSpacing: "0.04em",
               }}
             >
-              No photos yet.
+              No photos in this collection yet.
             </p>
           )}
 
-          <MultiImageUploader onUpload={handlePhotos} label="Add More Photos" />
-          {saving && (
+          {/* Add more photos — preview only */}
+          <MultiImageUploader
+            label="Add More Photos"
+            onChange={(files) => setPhotoFiles(files)}
+          />
+
+          {/* Upload button — only shown when files are queued */}
+          {photoFiles.length > 0 && (
+            <button
+              type="button"
+              onClick={handleUploadPhotos}
+              disabled={uploading}
+              className="admin-btn-primary"
+              style={{ marginBottom: "12px" }}
+            >
+              {uploading
+                ? "Uploading..."
+                : `Upload ${photoFiles.length} Photo${photoFiles.length !== 1 ? "s" : ""} →`}
+            </button>
+          )}
+
+          {/* Progress feedback */}
+          {uploading && (
             <p
               style={{
                 fontSize: "10px",
-                color: "rgba(0,0,0,0.35)",
+                color: "rgba(0,0,0,0.38)",
                 fontFamily: "Montserrat, sans-serif",
+                marginBottom: "8px",
               }}
             >
-              Saving...
+              Uploading to Cloudinary and saving to database...
             </p>
           )}
-          {photoErr && (
-            <div className="admin-error" style={{ marginTop: "6px" }}>
-              {photoErr}
-            </div>
-          )}
-          {addedCount > 0 && !saving && (
+
+          {addedCount > 0 && !uploading && (
             <p
               style={{
                 fontSize: "10px",
                 color: "#27ae60",
                 fontFamily: "Montserrat, sans-serif",
-                marginTop: "6px",
+                marginBottom: "8px",
               }}
             >
-              {addedCount} photo{addedCount !== 1 ? "s" : ""} added.
+              {addedCount} photo{addedCount !== 1 ? "s" : ""} added to
+              collection.
             </p>
+          )}
+
+          {photoError && (
+            <div className="admin-error" style={{ marginTop: "4px" }}>
+              {photoError}
+            </div>
           )}
         </div>
       </div>
 
+      {/* Responsive — collapse to single column on tablet */}
       <style>{`
         @media (max-width: 1100px) {
-          .edit-project-grid { grid-template-columns: 1fr !important; }
+          .edit-project-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </AdminLayout>

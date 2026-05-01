@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { sendContactMessage } from "@/services/api";
+import toast from "react-hot-toast";
 
 const initialState = { name: "", email: "", subject: "", message: "" };
 
@@ -28,8 +29,10 @@ const ContactForm = () => {
       await sendContactMessage(form);
       setSuccess(true);
       setForm(initialState);
+      toast.success("Message sent successfully.");
     } catch (err) {
       setError(err.message || "Failed to send message. Please try again.");
+      toast.error("Failed to send message.");
     } finally {
       setLoading(false);
     }

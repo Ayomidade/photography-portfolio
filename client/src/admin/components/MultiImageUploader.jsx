@@ -29,15 +29,16 @@ const MultiImageUploader = ({
     onChange(nextQueue.map((i) => i.file));
   };
 
+  // Image size validation
   const enqueue = (incoming) => {
     const valid = Array.from(incoming)
       .filter((f) => f.type.startsWith("image/"))
-      .filter((f) => f.size <= 15 * 1024 * 1024)
+      .filter((f) => f.size <= 9 * 1024 * 1024)
       .slice(0, maxFiles - queue.length);
 
     if (!valid.length) {
       setError(
-        "No valid images selected. Ensure files are JPG/PNG/WEBP under 15 MB.",
+        "No valid images selected. Ensure files are JPG/PNG/WEBP under 9 MB.",
       );
       return;
     }
@@ -142,7 +143,7 @@ const MultiImageUploader = ({
             letterSpacing: "0.05em",
           }}
         >
-          Up to {maxFiles} files · JPG PNG WEBP · 15 MB each
+          Up to {maxFiles} files · JPG PNG WEBP · 9 MB each
         </p>
       </div>
 

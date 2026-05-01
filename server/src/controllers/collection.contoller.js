@@ -8,6 +8,7 @@ import {
   updateCollection,
 } from "../models/Collections.js";
 import { deleteImage } from "../config/cloudinary.js";
+import { findPhotos } from "../models/Photos.js";
 
 // GET /api/collections
 export const getAllCollections = async (req, res) => {
@@ -208,3 +209,35 @@ export const removeCollection = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// GET Collection images
+
+export const getCollectionPhotos = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Collection ID" });
+    }
+
+    const collection = await findCollectionById(id);
+    if (!collection) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No collection found." });
+    }
+
+    const photos = await findPhotos({ collectionId: id });
+
+    return res.status(200).json({
+      success: true,
+      count: photos.length,
+      data: photos,
+    });
+  } catch (error) {
+    console.error("getCollectionPhotos error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}

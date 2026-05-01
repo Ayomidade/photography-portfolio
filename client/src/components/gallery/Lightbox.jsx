@@ -1,14 +1,4 @@
-/**
- * Lightbox
- *
- * Fullscreen photo viewer. Always dark background regardless of theme.
- * Arrow navigation, thumbnail strip, keyboard support (← → Esc).
- *
- * Props:
- * - photos, activeIndex, isOpen, onClose, onNext, onPrev, onThumbClick
- */
-
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Lightbox = ({
   photos = [],
@@ -22,18 +12,27 @@ const Lightbox = ({
   const total = photos.length;
   const active = photos[activeIndex] || null;
 
-  // Handle keyboard navigation
+  // ─── ZOOM STATE ─────────────────────────────
+  const [zoom, setZoom] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const dragging = useRef(false);
+  const start = useRef({ x: 0, y: 0 });
+
+  // Reset zoom when image changes
+  useEffect(() => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  }, [activeIndex]);
+
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeydown = (e) => {
-      if (e.key === "ArrowRight") {
-        onNext(total);
-      } else if (e.key === "ArrowLeft") {
-        onPrev(total);
-      } else if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "ArrowRight") onNext(total);
+      else if (e.key === "ArrowLeft") onPrev(total);
+      else if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeydown);
@@ -56,13 +55,10 @@ const Lightbox = ({
     justifyContent: "center",
     cursor: "pointer",
     fontSize: "18px",
-    transition: "border-color 0.25s, color 0.25s",
   };
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
       onClick={onClose}
       style={{
         position: "fixed",
@@ -73,13 +69,12 @@ const Lightbox = ({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        padding: "24px",
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? "all" : "none",
-        transition: "opacity 0.35s ease",
-        padding: "24px",
       }}
     >
-      {/* Close */}
+      {/* CLOSE */}
       <button
         onClick={onClose}
         style={{
@@ -93,39 +88,66 @@ const Lightbox = ({
           background: "none",
           border: "none",
           cursor: "pointer",
-          fontFamily: "var(--sans)",
-          transition: "color 0.25s",
-          zIndex: 1,
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
-        }
       >
-        ✕ &nbsp; Close
+        ✕ Close
       </button>
 
-      {/* Main image */}
+      {/* ───── MAIN ZOOM VIEWER ───── */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
           width: "70vw",
           height: "65vh",
-          marginBottom: "20px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: zoom > 1 ? "grab" : "zoom-in",
         }}
-        className="lb-main"
+        onWheel={(e) => {
+          // e.preventDefault();
+
+          setZoom((prev) => {
+            const next = prev + (e.deltaY < 0 ? 0.2 : -0.2);
+            return Math.min(Math.max(next, 1), 3);
+          });
+        }}
+        onDoubleClick={() => {
+          setZoom(1);
+          setPosition({ x: 0, y: 0 });
+        }}
+        onMouseDown={(e) => {
+          if (zoom === 1) return;
+
+          dragging.current = true;
+          start.current = {
+            x: e.clientX - position.x,
+            y: e.clientY - position.y,
+          };
+        }}
+        onMouseMove={(e) => {
+          if (!dragging.current) return;
+
+          setPosition({
+            x: e.clientX - start.current.x,
+            y: e.clientY - start.current.y,
+          });
+        }}
+        onMouseUp={() => (dragging.current = false)}
+        onMouseLeave={() => (dragging.current = false)}
       >
-        <div
+        <img
+          src={active?.imageUrl}
+          alt={active?.title || "photo"}
           style={{
-            width: "100%",
-            height: "100%",
-            background: active?.imageUrl ? undefined : "#1a1a1a",
-            backgroundImage: active?.imageUrl
-              ? `url(${active.imageUrl})`
-              : "none",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+            transition: dragging.current ? "none" : "transform 0.2s ease",
+            maxWidth: "100%",
+            maxHeight: "100%",
+            userSelect: "none",
+            pointerEvents: "none",
           }}
         />
 
@@ -136,14 +158,6 @@ const Lightbox = ({
             onPrev(total);
           }}
           style={{ ...navBtn, left: "-60px" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
-            e.currentTarget.style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-            e.currentTarget.style.color = "rgba(255,255,255,0.6)";
-          }}
         >
           ‹
         </button>
@@ -155,92 +169,74 @@ const Lightbox = ({
             onNext(total);
           }}
           style={{ ...navBtn, right: "-60px" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
-            e.currentTarget.style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-            e.currentTarget.style.color = "rgba(255,255,255,0.6)";
-          }}
         >
           ›
         </button>
       </div>
 
-      {/* Caption */}
+      {/* CAPTION */}
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ textAlign: "center", marginBottom: "20px" }}
+        style={{ textAlign: "center", marginTop: "16px" }}
       >
-        {active?.title && (
-          <p
-            style={{
-              fontFamily: "var(--serif)",
-              fontSize: "18px",
-              fontStyle: "italic",
-              fontWeight: 300,
-              color: "rgba(255,255,255,0.85)",
-              marginBottom: "4px",
-            }}
-          >
-            {active.title}
-          </p>
-        )}
         <p
           style={{
-            fontSize: "9px",
+            fontSize: "18px",
+            fontStyle: "italic",
+            color: "rgba(255,255,255,0.85)",
+          }}
+        >
+          {active?.title}
+        </p>
+
+        <p
+          style={{
+            fontSize: "10px",
             letterSpacing: "0.3em",
-            textTransform: "uppercase",
             color: "rgba(255,255,255,0.35)",
           }}
         >
           {activeIndex + 1} / {total}
         </p>
+
+        <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)" }}>
+          Scroll to zoom • Drag to pan • Double click to reset
+        </p>
       </div>
 
-      {/* Thumbnails */}
+      {/* THUMBNAILS */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           display: "flex",
           gap: "4px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          maxWidth: "90vw",
+          marginTop: "16px",
           overflowX: "auto",
-          overflowY: "hidden",
-          paddingBottom: "8px",
+          maxWidth: "90vw",
         }}
       >
-        {photos.map(
-          (photo, i) => (
-            (
-              <div
-                key={photo._id || i}
-                onClick={() => onThumbClick(i)}
-                style={{
-                  width: "60px",
-                  height: "40px",
-                  backgroundImage: photo.imageUrl
-                    ? `url(${photo.imageUrl})`
-                    : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  // background: !photo.imageUrl ? "#222" : undefined,
-                  cursor: "pointer",
-                  opacity: i === activeIndex ? 1 : 0.35,
-                  border:
-                    i === activeIndex
-                      ? "1px solid rgba(255,255,255,0.7)"
-                      : "1px solid transparent",
-                  transition: "opacity 0.25s, border-color 0.25s",
-                  flexShrink: 0,
-                }}
-              />
-            )
-          ),
-        )}
+        {photos.map((photo, i) => (
+          <div
+            key={photo._id || i}
+            onClick={() => onThumbClick(i)}
+            style={{
+              width: "60px",
+              height: "40px",
+              backgroundImage: photo.imageUrl
+                ? `url(${photo.imageUrl})`
+                : "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              cursor: "pointer",
+              opacity: i === activeIndex ? 1 : 0.35,
+              border:
+                i === activeIndex
+                  ? "1px solid rgba(255,255,255,0.7)"
+                  : "1px solid transparent",
+              flexShrink: 0,
+            }}
+          />
+        ))}
       </div>
 
       <style>{`

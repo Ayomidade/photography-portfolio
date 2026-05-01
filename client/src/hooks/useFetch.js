@@ -23,8 +23,9 @@ const useFetch = (url) => {
   }, [url])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    if (!url) return;
+    fetchData();
+  }, [url, fetchData]);
 
   return { data, loading, error, refetch: fetchData }
 }

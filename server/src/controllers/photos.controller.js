@@ -248,7 +248,7 @@ export const updatePhoto = async (req, res) => {
     const newCollectionId = collectionId;
     if (newCollectionId !== undefined && newCollectionId !== oldCollectionId) {
       if (oldCollectionId) {
-        await decrementPhotoCount(oldCollectionId);
+        await decreasePhotoCount(oldCollectionId);
       }
       if (newCollectionId) {
         if (!ObjectId.isValid(newCollectionId)) {
@@ -262,7 +262,7 @@ export const updatePhoto = async (req, res) => {
             .status(404)
             .json({ success: false, message: "Collection not found." });
         }
-        await incrementPhotoCount(newCollectionId);
+        await increasePhotoCount(newCollectionId);
       }
     }
 

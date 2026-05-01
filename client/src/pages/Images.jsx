@@ -23,7 +23,7 @@ const getAspectRatio = (i) => {
 };
 
 const Images = () => {
-  const { data, loading, error } = useFetch("/api/photos?standalone=true");
+  const { data, loading, error } = useFetch("/api/photos/all?standalone=true");
   const photos = data?.data || [];
   const { isOpen, activeIndex, open, close, next, prev } = useLightbox();
 
@@ -37,7 +37,7 @@ const Images = () => {
           background: "var(--bg)",
         }}
       >
-        <SectionLabel label="Commissioned Work" />
+        <SectionLabel label="Standalone Images" />
         <h1
           style={{
             fontFamily: "var(--serif)",
@@ -169,7 +169,7 @@ const Images = () => {
             padding: "80px 48px",
           }}
         >
-          No commissioned work yet.
+          No standalone image yet.
         </p>
       )}
 

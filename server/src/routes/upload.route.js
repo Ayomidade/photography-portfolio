@@ -13,13 +13,11 @@ upload_router.post("/single", protect, upload.single("image"), (req, res) => {
         .json({ success: false, message: "No file uploaded" });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Image uploaded successfully.",
-        data: { imageUrl: req.file.path, imagePublicId: req.file.filename },
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully.",
+      data: { imageUrl: req.file.path, imagePublicId: req.file.filename },
+    });
   } catch (error) {
     console.error("Image upload error:", error.message);
     return res.status(500).json({ success: false, message: error.message });
@@ -57,5 +55,13 @@ upload_router.post(
     }
   }
 );
+// upload_router.post(
+//   "/multiple",
+//   protect,
+//   upload.array("images", 20),
+//   (req, res) => {
+//     console.log("FILES:", req.files);
+//   },
+// );
 
 export default upload_router;

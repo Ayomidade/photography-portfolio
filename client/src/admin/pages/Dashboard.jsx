@@ -44,7 +44,7 @@ const Dashboard = () => {
         />
         <StatCard label="Projects" value={totalProjects} sub="Collections" />
         <StatCard
-          label="Commissions"
+          label="Images"
           value={standalone}
           sub="Standalone photos"
         />

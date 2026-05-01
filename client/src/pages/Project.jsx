@@ -36,9 +36,15 @@ const Project = () => {
     load();
   }, [slug]);
 
-  const { data: photosData, loading: photosLoading } = useFetch(
-    project ? `/api/photos?collectionId=${project._id}` : null,
-  );
+  const photosUrl = project?._id
+    ? `/api/collections/photos/${project._id}`
+    : null;
+
+  const { data: photosData, loading: photosLoading } = useFetch(photosUrl);
+
+  // const { data: photosData, loading: photosLoading, fetch } = useFetch(
+  //   `/api/photos/all?${project._id}`
+  // );
   const photos = photosData?.data || [];
   const { isOpen, activeIndex, open, close, next, prev } = useLightbox(
     photos.length,
