@@ -1,18 +1,183 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image+jpg/xml" href="/IMG_5752.JPG" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- ========================================== -->
+    <!-- STATIC SEO - Visual Artist & Documentary Photographer -->
+    <!-- ========================================== -->
+    
+    <title>Anthony Monday | Visual Artist & Documentary Photographer</title>
+    <meta name="description" content="Visual artist and documentary photographer exploring human geography, cultural identity, and unmediated storytelling through fine art documentary and visual anthropology." />
+    <meta name="keywords" content="Anthony Monday, visual artist, documentary photographer, fine art documentary, visual storytelling, cultural documentary, photographic essays, visual anthropology" />
+    <meta name="author" content="Anthony Monday" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://photography-portfolio-six-kappa.vercel.app/" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://photography-portfolio-six-kappa.vercel.app/" />
+    <meta property="og:title" content="Anthony Monday | Visual Artist & Documentary Photographer" />
+    <meta property="og:description" content="Documentary photography and visual art exploring the intersection of place, memory, and human condition. Awards, exhibitions, and photographic essays." />
+    <meta property="og:image" content="https://photography-portfolio-six-kappa.vercel.app/og-documentary.jpg" />
+    <meta property="og:image:alt" content="Documentary photography series by Anthony Monday - candid black and white street scene" />
+    <meta property="og:site_name" content="Anthony Monday | Visual Art & Documentary" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://photography-portfolio-six-kappa.vercel.app/" />
+    <meta name="twitter:title" content="Anthony Monday | Visual Artist & Documentary Photographer" />
+    <meta name="twitter:description" content="Visual anthropology and documentary photography. Long-term projects, photo essays, and fine art documentary work." />
+    <meta name="twitter:image" content="https://photography-portfolio-six-kappa.vercel.app/twitter-doc.jpg" />
+    <meta name="twitter:creator" content="@anthonymonday" />
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="/IMG_5752.JPG" />
+    <link rel="apple-touch-icon" href="/IMG_5752.JPG" />
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap"
       rel="stylesheet"
     />
-    <title>Anthony Monday</title>
+    
+    <!-- ========================================== -->
+    <!-- STRUCTURED DATA - Visual Artist Schema -->
+    <!-- ========================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VisualArtist",
+      "name": "Anthony Monday",
+      "alternateName": "A. Monday",
+      "url": "https://photography-portfolio-six-kappa.vercel.app/",
+      "image": "https://photography-portfolio-six-kappa.vercel.app/artist-portrait.jpg",
+      "description": "Visual artist and documentary photographer working at the intersection of fine art and social documentary. Long-term projects explore themes of displacement, belonging, and the poetics of everyday life.",
+      "sameAs": [
+        "https://www.instagram.com/anthonymonday15/",
+        <!-- "https://twitter.com/anthonymonday",
+        "https://vimeo.com/anthonymonday",
+        "https://www.lensculture.com/anthony-monday" -->
+      ],
+      "jobTitle": "Visual Artist & Documentary Photographer",
+      "knowsAbout": [
+        "Documentary Photography", 
+        "Visual Anthropology", 
+        "Photo Essays", 
+        "Fine Art Documentary",
+        "Street Photography",
+        "Long-term Documentary Projects"
+      ],
+      <!-- "award": [
+        "World Press Photo Longlist 2023",
+        "LensCulture Emerging Talent Award",
+        "PDN Photo Annual Winner"
+      ],
+      "significantLink": "https://photography-portfolio-six-kappa.vercel.app/projects/forgotten-coast",
+      "artform": ["Photography", "Visual Art", "Documentary Film"],
+      "genre": ["Documentary", "Visual Anthropology", "Fine Art"] -->
+    }
+    </script>
+    
+    <!-- Documentary Project Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Documentary Photography Projects",
+      "description": "A visual archive of long-term documentary projects examining contemporary life, cultural identity, and human geography.",
+      "url": "https://photography-portfolio-six-kappa.vercel.app/",
+      "mainEntity": {
+        "@type": "ImageGallery",
+        "name": "Documentary Portfolio",
+        "description": "Ongoing visual investigations: migration, labor, ritual, and the spaces between.",
+        "numberOfItems": 24
+      },
+      <!-- "significantLinks": [
+        "https://photography-portfolio-six-kappa.vercel.app/project/edges-of-the-city",
+        "https://photography-portfolio-six-kappa.vercel.app/project/holding-time",
+        "https://photography-portfolio-six-kappa.vercel.app/project/after-the-factory"
+      ] -->
+    }
+    </script>
+    
+    <!-- Critical CSS -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #0a0a0a;
+        color: #e5e5e5;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 300;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    
+    <noscript>
+      <div style="background:#0a0a0a; color:#e0e0e0; font-family: 'Montserrat', 'Cormorant Garamond', serif; padding: 2rem; text-align: center;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+          <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; letter-spacing: 1px;">Anthony Monday</h1>
+          <p style="font-size: 1.3rem; margin: 0.5rem 0 1rem; font-style: italic;">Visual Artist & Documentary Photographer</p>
+          <p style="max-width: 700px; margin: 1rem auto;">Exploring human geography, cultural identity, and the poetics of the everyday through long-form documentary projects and visual art.</p>
+          
+          <!-- <div style="border-top: 1px solid #333; padding-top: 2rem; margin-top: 2rem;">
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem;">Recent Documentary Projects</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+              <div style="background: #1a1a1a; padding: 1rem;">
+                <h3>Edges of the City</h3>
+                <p>Peripheral landscapes and border ecologies — an ongoing visual investigation of urban margins.</p>
+              </div>
+              <div style="background: #1a1a1a; padding: 1rem;">
+                <h3>Holding Time</h3>
+                <p>Portraits and environments exploring labor, ritual, and the persistence of community.</p>
+              </div>
+              <div style="background: #1a1a1a; padding: 1rem;">
+                <h3>After the Factory</h3>
+                <p>Post-industrial landscapes and the architecture of memory in the Rust Belt.</p>
+              </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+              <p>Selected Clients & Features: <em>National Geographic, The New Yorker, TIME, Magnum Photos, Aperture Foundation</em></p>
+              <p style="margin-top: 1rem;">Contact: studio@anthonymonday.com | Represented by <em>Gallery 401</em></p>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </noscript>
+    
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
