@@ -1,67 +1,81 @@
 import { Router } from "express";
 import { protect } from "../middlewares/auth.js";
-import { upload } from "../config/cloudinary.js";
+import { upload } from "../middlewares/upload.js";
+import {
+  uploadImageToCloudinary,
+  uploadMultipleImages,
+} from "../services/cloudinary.service.js";
 
-const upload_router = Router();
+const router = Router();
 
-// -------POST /api/upload/single-------
-upload_router.post("/single", protect, upload.single("image"), (req, res) => {
+// -------- SINGLE UPLOAD --------
+router.post("/single", protect, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No file uploaded" });
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
     }
+
+    const result = await uploadImageToCloudinary(
+      req.file.buffer,
+      req.file.originalname,
+    );
 
     return res.status(200).json({
       success: true,
-      message: "Image uploaded successfully.",
-      data: { imageUrl: req.file.path, imagePublicId: req.file.filename },
+      message: "Image uploaded successfully",
+      data: {
+        imageUrl: result.secure_url,
+        imagePublicId: result.public_id,
+      },
     });
   } catch (error) {
-    console.error("Image upload error:", error.message);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Single upload error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
-// -------POST /api/upload/multiple-------
-upload_router.post(
+// -------- MULTIPLE UPLOAD --------
+router.post(
   "/multiple",
   protect,
   upload.array("images", 20),
-  (req, res) => {
+  async (req, res) => {
     try {
       if (!req.files || req.files.length === 0) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No files uploaded" });
+        return res.status(400).json({
+          success: false,
+          message: "No files uploaded",
+        });
       }
 
-      const uploadedImages = req.files.map((file) => ({
-        imageUrl: file.path,
-        imagePublicId: file.filename,
+      const results = await uploadMultipleImages(req.files);
+
+      const formatted = results.map((img) => ({
+        imageUrl: img.secure_url,
+        imagePublicId: img.public_id,
       }));
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Images uploaded successfully.",
-          data: uploadedImages,
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Images uploaded successfully",
+        data: formatted,
+      });
     } catch (error) {
-      console.error("Multiple image upload error:", error.message);
-      return res.status(500).json({ success: false, message: error.message });
-    }
-  }
-);
-// upload_router.post(
-//   "/multiple",
-//   protect,
-//   upload.array("images", 20),
-//   (req, res) => {
-//     console.log("FILES:", req.files);
-//   },
-// );
+      console.error("Multiple upload error:", error.message);
 
-export default upload_router;
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+);
+
+export default router;
