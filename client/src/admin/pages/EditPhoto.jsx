@@ -106,7 +106,7 @@ const EditPhoto = () => {
       }
 
       // ── Step 2: update photo document in MongoDB ──
-      const saveRes = await fetch(`/api/photos/${id}`, {
+      const saveRes = await useFetch(`/api/photos/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
