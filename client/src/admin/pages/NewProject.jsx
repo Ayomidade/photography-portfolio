@@ -73,11 +73,14 @@ const NewProject = () => {
       const fd = new FormData();
       fd.append("image", coverFile);
 
-      const uploadRes = await fetch("/api/upload/single", {
-        method: "POST",
-        credentials: "include",
-        body: fd,
-      });
+      const uploadRes = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/upload/single",
+        {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        },
+      );
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok)
         throw new Error(uploadData.message || "Cover upload failed.");
@@ -86,18 +89,21 @@ const NewProject = () => {
         uploadData.data;
 
       // b. Save collection to MongoDB
-      const saveRes = await fetch("/api/collections", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: form.name,
-          slug: form.slug,
-          description: form.description,
-          coverImage,
-          coverPublicId,
-        }),
-      });
+      const saveRes = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/collections",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name: form.name,
+            slug: form.slug,
+            description: form.description,
+            coverImage,
+            coverPublicId,
+          }),
+        },
+      );
       const saveData = await saveRes.json();
       if (!saveRes.ok)
         throw new Error(saveData.message || "Failed to create project.");
@@ -127,11 +133,14 @@ const NewProject = () => {
       const fd = new FormData();
       photoFiles.forEach((f) => fd.append("images", f));
 
-      const uploadRes = await fetch("/api/upload/multiple", {
-        method: "POST",
-        credentials: "include",
-        body: fd,
-      });
+      const uploadRes = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/upload/multiple",
+        {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        },
+      );
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok)
         throw new Error(uploadData.message || "Photo upload failed.");
@@ -141,7 +150,7 @@ const NewProject = () => {
       // b. Save one photo doc per uploaded image
       const results = await Promise.all(
         uploaded.map(({ imageUrl, imagePublicId }) =>
-          fetch("/api/photos", {
+          fetch("https://photography-portfolio-k7o4.onrender.com/api/photos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",

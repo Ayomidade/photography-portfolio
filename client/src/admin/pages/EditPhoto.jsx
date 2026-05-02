@@ -91,11 +91,14 @@ const EditPhoto = () => {
         const fd = new FormData();
         fd.append("image", imageFile);
 
-        const uploadRes = await fetch("/api/upload/single", {
-          method: "POST",
-          credentials: "include",
-          body: fd,
-        });
+        const uploadRes = await fetch(
+          "https://photography-portfolio-k7o4.onrender.com/api/upload/single",
+          {
+            method: "POST",
+            credentials: "include",
+            body: fd,
+          },
+        );
         const uploadData = await uploadRes.json();
         if (!uploadRes.ok)
           throw new Error(uploadData.message || "Image upload failed.");
@@ -106,20 +109,23 @@ const EditPhoto = () => {
       }
 
       // ── Step 2: update photo document in MongoDB ──
-      const saveRes = await useFetch(`/api/photos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description,
-          category: form.category,
-          imageUrl,
-          imagePublicId,
-          collectionId: form.collectionId || null,
-          featured: form.featured,
-        }),
-      });
+      const saveRes = await fetch(
+        `https://photography-portfolio-k7o4.onrender.com/api/photos/${id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            title: form.title,
+            description: form.description,
+            category: form.category,
+            imageUrl,
+            imagePublicId,
+            collectionId: form.collectionId || null,
+            featured: form.featured,
+          }),
+        },
+      );
       const saveData = await saveRes.json();
       if (!saveRes.ok)
         throw new Error(saveData.message || "Failed to update photo.");

@@ -81,10 +81,13 @@ const AdminPhotos = () => {
 
   const del = async (id) => {
     if (!window.confirm("Delete this photo permanently?")) return;
-    await fetch(`/api/photos/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    await fetch(
+      `https://photography-portfolio-k7o4.onrender.com/api/photos/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
     refetch();
   };
 

@@ -93,7 +93,7 @@ const EditProject = () => {
         const fd = new FormData();
         fd.append("image", coverFile);
 
-        const uploadRes = await fetch("/api/upload/single", {
+        const uploadRes = await fetch("https://photography-portfolio-k7o4.onrender.com/api/upload/single", {
           method: "POST",
           credentials: "include",
           body: fd,
@@ -160,11 +160,14 @@ const EditProject = () => {
       const fd = new FormData();
       photoFiles.forEach((f) => fd.append("images", f));
 
-      const uploadRes = await fetch("/api/upload/multiple", {
-        method: "POST",
-        credentials: "include",
-        body: fd,
-      });
+      const uploadRes = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/upload/multiple",
+        {
+          method: "POST",
+          credentials: "include",
+          body: fd,
+        },
+      );
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok)
         throw new Error(uploadData.message || "Photo upload failed.");
@@ -174,7 +177,7 @@ const EditProject = () => {
       // b. Save one photo doc per uploaded image
       const results = await Promise.all(
         uploaded.map(({ imageUrl, imagePublicId }) =>
-          fetch("/api/photos", {
+          fetch("https://photography-portfolio-k7o4.onrender.com/api/photos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",

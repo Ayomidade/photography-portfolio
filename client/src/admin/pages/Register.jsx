@@ -44,11 +44,14 @@ const Register = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/admin/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setSuccess(true);
