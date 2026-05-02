@@ -59,7 +59,10 @@ const EditProject = () => {
 
   // Load existing project on mount
   useEffect(() => {
-    fetch(`/api/collections/${id}`, { credentials: "include" })
+    fetch(
+      `https://photography-portfolio-k7o4.onrender.com/api/collections/${id}`,
+      { credentials: "include" },
+    )
       .then((r) => r.json())
       .then((data) => {
         const p = data.data || data;
@@ -107,7 +110,7 @@ const EditProject = () => {
         coverPublicId = uploadData.data.imagePublicId;
       }
 
-      const saveRes = await fetch(`/api/collections/${id}`, {
+      const saveRes = await fetch(`https://photography-portfolio-k7o4.onrender.com/api/collections/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -218,7 +221,7 @@ const EditProject = () => {
   const handleDeletePhoto = async (photoId) => {
     if (!window.confirm("Remove this photo? This cannot be undone.")) return;
     try {
-      const res = await fetch(`/api/photos/${photoId}`, {
+      const res = await fetch(`https://photography-portfolio-k7o4.onrender.com/api/photos/${photoId}`, {
         method: "DELETE",
         credentials: "include",
       });

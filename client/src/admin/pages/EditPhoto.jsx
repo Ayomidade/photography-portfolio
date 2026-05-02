@@ -54,7 +54,7 @@ const EditPhoto = () => {
 
   // Load existing photo on mount
   useEffect(() => {
-    fetch(`/api/photos/${id}`, { credentials: "include" })
+    fetch(`https://photography-portfolio-k7o4.onrender.com/api/photos/${id}`, { credentials: "include" })
       .then((r) => r.json())
       .then((data) => {
         const p = data.data || data;
