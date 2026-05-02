@@ -56,7 +56,7 @@ const NewPhoto = () => {
       const fd = new FormData()
       fd.append('image', imageFile)
 
-      const uploadRes = await fetch('/api/upload/single', {
+      const uploadRes = await fetch('https://photography-portfolio-k7o4.onrender.com/api/upload/single', {
         method:      'POST',
         credentials: 'include',
         body:        fd,
@@ -68,17 +68,20 @@ const NewPhoto = () => {
       const imagePublicId = uploadData.data.imagePublicId;
 
       // ── Step 2: save photo document to MongoDB ──
-      const saveRes = await fetch('/api/photos', {
-        method:      'POST',
-        headers:     { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...form,
-          imageUrl,
-          imagePublicId,
-          collectionId: form.collectionId || null,
-        }),
-      })
+      const saveRes = await fetch(
+        "https://photography-portfolio-k7o4.onrender.com/api/photos",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            ...form,
+            imageUrl,
+            imagePublicId,
+            collectionId: form.collectionId || null,
+          }),
+        },
+      );
       const saveData = await saveRes.json()
       if (!saveRes.ok) throw new Error(saveData.message || 'Failed to save photo.')
 
