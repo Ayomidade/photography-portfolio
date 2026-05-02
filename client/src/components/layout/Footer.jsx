@@ -65,6 +65,17 @@ const Footer = () => {
           ))}
         </ul>
 
+        <Link
+          to="/admin"
+          style={{
+            fontSize: "9px",
+            color: "var(--muted)",
+            letterSpacing: "0.1em",
+          }}
+        >
+          Admin
+        </Link>
+
         <p
           style={{
             fontSize: "9px",

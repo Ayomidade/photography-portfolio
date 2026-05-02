@@ -15,6 +15,8 @@ import Lightbox from "@/components/gallery/Lightbox";
 import BtnGhost from "@/components/ui/BtnGhost";
 import SectionLabel from "@/components/ui/SectionLabel";
 import SEO from "@/components/SEO";
+import PageMeta from "@/components/ui/PageMeta";
+import { SITE } from "@/utils/seo";
 
 const Project = () => {
   const { slug } = useParams();
@@ -96,7 +98,17 @@ const Project = () => {
 
   return (
     <>
-    <SEO title={project.name} description={project.description} />
+      <PageMeta
+        title={project.name}
+        description={
+          project.description ||
+          `${project.name} — a visual project by Anthony Monday. ${project.photoCount ?? 0} photographs.`
+        }
+        image={project.coverImage || SITE.image}
+        url={`${SITE.url}/projects/${project.slug}`}
+        type="article"
+      />
+      {/* <SEO title={project.name} description={project.description} /> */}
       {/* Header */}
       <div
         style={{

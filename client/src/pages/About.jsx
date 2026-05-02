@@ -7,6 +7,8 @@
 
 import SectionLabel from "@/components/ui/SectionLabel";
 import SEO from "@/components/SEO";
+import PageMeta from "@/components/ui/PageMeta";
+import { SITE } from "@/utils/seo";
 
 const paragraphs = [
   `Born in Lagos, Nigeria. Anthony Monday is a visual storyteller who started his 
@@ -52,10 +54,15 @@ const About = () => {
 
   return (
     <>
-      <SEO
+      <PageMeta
+        title="About"
+        description="Anthony Monday is a Lagos-based visual storyteller whose work spans documentary, portrait, and landscape photography. Published in National Geographic, The New York Times, The Guardian and more."
+        url={`${SITE.url}/about`}
+      />
+      {/* <SEO
         title="About Anthony Monday"
         description="Learn more about Anthony Monday, a visual storyteller exploring personal and societal themes through his photography."
-      />
+      /> */}
 
       <div
         className="about-page"

@@ -8,12 +8,19 @@
 import SectionLabel from "@/components/ui/SectionLabel";
 import ProjectsGrid from "@/components/projects/ProjectsGrid";
 import SEO from "@/components/SEO";
+import PageMeta from "@/components/ui/PageMeta";
+import { SITE } from "@/utils/seo";
 
 const Projects = () => {
   return (
     <>
-<SEO title="Projects" description="Explore Anthony Monday's photography portfolio showcasing editorial, corporate, and documentary work." />
-      
+      <PageMeta
+        title="Projects"
+        description="Visual projects and photo series by Anthony Monday — documentary, portrait, and landscape photography from Nigeria and across Africa."
+        url={`${SITE.url}/projects`}
+      />
+      {/* <SEO title="Projects" description="Explore Anthony Monday's photography portfolio showcasing editorial, corporate, and documentary work." /> */}
+
       <div
         className="section-header"
         style={{

@@ -8,14 +8,20 @@
 import SectionLabel from "@/components/ui/SectionLabel";
 import SEO from "@/components/SEO";
 import ContactSection from "@/components/contact/ContactSection";
+import PageMeta from "@/components/ui/PageMeta";
+import { SITE } from "@/utils/seo";
 
 const Contact = () => {
   return (
     <>
-
-    <SEO title="Contact" description="Get in touch with Anthony Monday to discuss your photography project." />
+      <PageMeta
+        title="Contact"
+        description="Get in touch with Anthony Monday for commissions, prints, licensing, and artistic collaborations. Based in Lagos, Nigeria."
+        url={`${SITE.url}/contact`}
+      />
+      {/* <SEO title="Contact" description="Get in touch with Anthony Monday to discuss your photography project." /> */}
       <div
-      className="section-header"
+        className="section-header"
         style={{
           padding: "calc(var(--nav-height) + 64px) 48px 0",
           background: "var(--bg)",
@@ -37,8 +43,7 @@ const Contact = () => {
 
       <ContactSection />
 
-
-  <style>{`
+      <style>{`
         
         @media (max-width: 480px) {
           .section-header { padding-left: 20px !important; }
