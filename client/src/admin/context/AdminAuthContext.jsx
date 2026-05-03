@@ -40,7 +40,7 @@ export const AdminAuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await fetch(`${BASE_URL}/api/admin/logout`, {
+    await fetch(`${BASE_URL}/admin/logout`, {
       method: "POST",
       credentials: "include",
     });
