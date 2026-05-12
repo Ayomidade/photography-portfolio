@@ -15,11 +15,11 @@ export const getAllCollections = async (req, res) => {
   try {
     const collections = await findAllCollections();
 
-    if (!collections || collections.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No collections found." });
-    }
+    // if (!collections || collections.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "No collections found." });
+    // }
 
     return res
       .status(200)
