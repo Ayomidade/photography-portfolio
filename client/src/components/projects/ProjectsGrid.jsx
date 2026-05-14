@@ -109,7 +109,7 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
           className="projects-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3fr)",
+            gridTemplateColumns: "3fr",
             gap: "4px",
           }}
         >
