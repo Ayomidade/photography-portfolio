@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { collections } from "../config/db.js";
 
 export const findAllCollections = async () => {
-  return await collections().find().sort({ createdAt: -1 }).toArray();
+  return await collections().find().sort({ createdAt: 1 }).toArray();
 };
 
 export const findCollectionById = async (id) => {
