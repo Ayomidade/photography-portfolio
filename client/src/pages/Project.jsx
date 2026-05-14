@@ -156,7 +156,7 @@ const Project = () => {
           className="project-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(3fr)",
             gap: "3px",
           }}
         >
@@ -178,7 +178,7 @@ const Project = () => {
           className="project-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(3fr)",
             gap: "3px",
           }}
         >
