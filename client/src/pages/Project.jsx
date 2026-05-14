@@ -214,10 +214,10 @@ const Project = () => {
 
       <style>{`
         @media (max-width: 1024px) {
-          .project-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .project-grid { grid-template-columns: repeat(2fr) !important; }
         }
         @media (max-width: 480px) {
-          .project-grid { grid-template-columns: 1fr !important; }
+          .project-grid { grid-template-columns: 2fr !important; }
         }
       `}</style>
     </>
