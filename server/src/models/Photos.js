@@ -18,7 +18,7 @@ export const create = async (photoData) => {
 };
 
 export const findAll = async () => {
-  const result = await photos().find().sort({ createdAt: -1 }).toArray();
+  const result = await photos().find().sort({ createdAt: 1 }).toArray();
   return result;
 };
 
@@ -33,7 +33,7 @@ export const deleteOne = async (id) => {
 };
 
 export const findPhotos = async (query = {}) => {
-  return await photos().find(query).sort({ createdAt: -1 }).toArray();
+  return await photos().find(query).sort({ createdAt: 1 }).toArray();
 };
 
 export const updateOne = async (id, data) => {
