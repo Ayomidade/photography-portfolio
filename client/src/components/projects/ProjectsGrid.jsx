@@ -60,7 +60,7 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
           className="projects-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(3fr)",
             gap: "4px",
           }}
         >
@@ -109,7 +109,7 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
           className="projects-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(3fr)",
             gap: "4px",
           }}
         >
