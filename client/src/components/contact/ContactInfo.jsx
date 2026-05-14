@@ -22,7 +22,7 @@ const ContactInfo = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {[
-          { label: 'Email', value: 'anthonymondday15@gmail.com', href: 'mailto:anthonymonday15@gmail.com' },
+          { label: 'Email', value: 'anthonymonday15@gmail.com', href: 'mailto:anthonymonday15@gmail.com' },
           { label: 'Tel', value: '+234 915 430 2034', href: 'tel:+234 915 430 2034' },
           { label: 'Instagram', value: '@anthonymonday15', href: 'https://instagram.com/anthonymonday15' },
           { label: 'Location', value: 'Lagos, Nigeria' },

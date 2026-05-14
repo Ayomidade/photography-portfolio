@@ -13,7 +13,7 @@ const PhotoCard = ({ photo, onClick, style = {} }) => {
         overflow: "hidden",
         background: "var(--surface)",
         cursor: "pointer",
-aspectRatio:"3/4",
+        aspectRatio: "4/3",
         ...style,
       }}
     >
