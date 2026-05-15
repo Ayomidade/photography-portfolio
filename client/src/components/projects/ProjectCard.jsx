@@ -63,6 +63,7 @@ const ProjectCard = ({ project, index }) => {
       {/* Title below */}
       <div style={{ padding: "14px 0 24px" }}>
         <p
+          className="project-title"
           style={{
             fontSize: "10px",
             fontWeight: 500,
@@ -76,6 +77,11 @@ const ProjectCard = ({ project, index }) => {
           {name}
         </p>
       </div>
+
+      <style>{`
+        @media (max-width: 480px) { 
+            .project-title { font-size: 8px !important; }
+      `}</style>
     </Link>
   );
 };

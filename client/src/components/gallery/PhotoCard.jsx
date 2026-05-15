@@ -13,12 +13,19 @@ const PhotoCard = ({ photo, onClick, style = {} }) => {
         overflow: "hidden",
         background: "var(--surface)",
         cursor: "pointer",
-        aspectRatio: "4/3",
         ...style,
       }}
     >
       {/* Image */}
-      <div
+      <img
+        src={photo?.imageUrl}
+        alt={photo?.title}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
+      />
+      {/* <div
         style={{
           position: "absolute",
           inset: 0,
@@ -28,7 +35,7 @@ const PhotoCard = ({ photo, onClick, style = {} }) => {
           transition: "transform var(--transition-slow)",
           transform: hovered ? "scale(1.04)" : "scale(1)",
         }}
-      />
+      /> */}
 
       {/* Hover overlay */}
       <div

@@ -206,6 +206,7 @@ const Lightbox = ({
 
       {/* THUMBNAILS */}
       <div
+        className="thumbnail"
         onClick={(e) => e.stopPropagation()}
         style={{
           display: "flex",
@@ -216,24 +217,22 @@ const Lightbox = ({
         }}
       >
         {photos.map((photo, i) => (
-          <div
+          <img
             key={photo._id || i}
             onClick={() => onThumbClick(i)}
+            src={photo?.imageUrl}
             style={{
               width: "60px",
               height: "40px",
-              backgroundImage: photo.imageUrl
-                ? `url(${photo.imageUrl})`
-                : "none",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              // backgroundSize: "cover",
+              // backgroundPosition: "center",
               cursor: "pointer",
               opacity: i === activeIndex ? 1 : 0.35,
               border:
                 i === activeIndex
                   ? "1px solid rgba(255,255,255,0.7)"
                   : "1px solid transparent",
-              flexShrink: 0,
+              // flexShrink: 0,
             }}
           />
         ))}
@@ -258,6 +257,9 @@ const Lightbox = ({
             right: 8px !important;
             left: auto !important;
           }
+            .thumbnail{
+            scrollbar-width: thin;
+            }
         }
       `}</style>
     </div>

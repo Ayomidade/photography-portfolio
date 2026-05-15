@@ -137,7 +137,7 @@ const ProjectsGrid = ({ limit, showHeader = true }) => {
       <style>{`
         @media (max-width: 768px) {
           .projects-grid {
-            grid-template-columns: 2fr !important;
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>

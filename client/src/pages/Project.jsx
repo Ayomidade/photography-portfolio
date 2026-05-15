@@ -122,11 +122,11 @@ const Project = () => {
           <BtnGhost label="All Projects" to="/projects" />
         </div>
 
-        <SectionLabel label={`${project.photoCount ?? 0} Photographs`} />
+        {/* <SectionLabel label={`${project.photoCount ?? 0} Photographs`} /> */}
         <h1
           style={{
             fontFamily: "var(--serif)",
-            fontSize: "clamp(36px, 5vw, 72px)",
+            fontSize: "clamp(19px, 5vw, 22px)",
             fontWeight: 300,
             color: "var(--text)",
             fontStyle: "italic",
@@ -142,7 +142,7 @@ const Project = () => {
               fontSize: "13px",
               lineHeight: 2,
               color: "var(--muted)",
-              maxWidth: "540px",
+              // maxWidth: "540px",
             }}
           >
             {project.description}
@@ -156,8 +156,8 @@ const Project = () => {
           className="project-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3fr)",
-            gap: "3px",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "9px",
           }}
         >
           {[...Array(6)].map((_, i) => (
@@ -178,8 +178,8 @@ const Project = () => {
           className="project-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3fr)",
-            gap: "3px",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "9px",
           }}
         >
           {photos.map((photo, i) => (
@@ -217,7 +217,7 @@ const Project = () => {
          .project-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 480px) {
-          .project-grid { grid-template-columns: 1fr !important; }
+          .project-grid { grid-template-columns: (2, 1fr) !important; }
       `}</style>
     </>
   );
