@@ -127,9 +127,9 @@ const Project = () => {
           style={{
             fontFamily: "var(--serif)",
             fontSize: "clamp(19px, 5vw, 22px)",
-            fontWeight: 300,
+            fontWeight: 400,
             color: "var(--text)",
-            fontStyle: "italic",
+            // fontStyle: "bold",
             marginBottom: "14px",
             lineHeight: 1.05,
           }}
