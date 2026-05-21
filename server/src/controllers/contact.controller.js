@@ -33,9 +33,12 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  // Use IPv4-only lookup and bind outgoing socket to IPv4 address
+  // Use IPv4-only lookup. Optionally bind outgoing socket to a specific IPv4
+  // address by setting the LOCAL_ADDRESS env var (do NOT default to 0.0.0.0).
   lookup,
-  localAddress: process.env.LOCAL_ADDRESS || "0.0.0.0",
+  ...(process.env.LOCAL_ADDRESS
+    ? { localAddress: process.env.LOCAL_ADDRESS }
+    : {}),
 });
 
 /**
