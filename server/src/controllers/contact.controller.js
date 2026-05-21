@@ -59,6 +59,13 @@ export const sendContactMessage = async (req, res) => {
 
     const adminEmail = process.env.ADMIN_EMAIL;
 
+    if (!adminEmail || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error.",
+      });
+    }
+
     // Email to admin
     await transporter.sendMail({
       from: `"Anthony Monday Portfolio" <${process.env.EMAIL_USER}>`,
