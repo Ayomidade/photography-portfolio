@@ -180,6 +180,7 @@ const Project = () => {
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: "9px",
+            padding: "0 48px 48px",
           }}
         >
           {photos.map((photo, i) => (

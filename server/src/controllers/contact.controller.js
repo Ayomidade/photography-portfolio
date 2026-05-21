@@ -53,11 +53,11 @@ export const sendContactMessage = async (req, res) => {
       });
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+    const adminEmail = process.env.ADMIN_EMAIL;
 
     // Email to admin
     const adminMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: email,
       to: adminEmail,
       subject: `New Contact Form Submission: ${subject}`,
       html: `
@@ -72,7 +72,7 @@ export const sendContactMessage = async (req, res) => {
 
     // Confirmation email to user
     const userMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: adminEmail,
       to: email,
       subject: "We received your message",
       html: `
