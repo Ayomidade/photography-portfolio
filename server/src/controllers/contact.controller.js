@@ -20,6 +20,14 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS, // Gmail App Password
   },
+  requireTLS: true,
+  connectionTimeout: 60000,
+  greetingTimeout: 60000,
+  socketTimeout: 60000,
+  authTimeout: 60000,
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 /**
@@ -65,6 +73,9 @@ export const sendContactMessage = async (req, res) => {
         message: "Server configuration error.",
       });
     }
+
+    // Verify SMTP connection before sending emails
+    await transporter.verify();
 
     // Email to admin
     await transporter.sendMail({
