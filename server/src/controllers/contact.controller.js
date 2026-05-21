@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
 
 /**
  * Contact Controller
@@ -11,6 +12,10 @@ import nodemailer from "nodemailer";
  * - EMAIL_PASS: Gmail App Password (16 chars, NOT your regular password)
  * - ADMIN_EMAIL: where contact form submissions are delivered
  */
+
+// Force IPv4 DNS resolution to avoid ENETUNREACH for IPv6-only lookups
+const lookup = (hostname, options, callback) =>
+  dns.lookup(hostname, { ...options, family: 4 }, callback);
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -28,6 +33,9 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
+  // Use IPv4-only lookup and bind outgoing socket to IPv4 address
+  lookup,
+  localAddress: process.env.LOCAL_ADDRESS || "0.0.0.0",
 });
 
 /**
