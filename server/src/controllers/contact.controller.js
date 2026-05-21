@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-
+import { config } from "dotenv";
 /**
  * Contact Controller
  *
@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
  * Validates form data, sends email to admin and confirmation to user.
  */
 
+config();
 // Initialize transporter for email sending
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || "gmail",
@@ -14,6 +15,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  port: 587,
+  secure: false,
+  host: "smtp.gmail.com",
 });
 
 /**
