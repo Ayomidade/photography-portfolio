@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import dns from "dns";
 
 /**
  * Contact Controller
@@ -13,32 +12,15 @@ import dns from "dns";
  * - ADMIN_EMAIL: where contact form submissions are delivered
  */
 
-// Force IPv4 DNS resolution to avoid ENETUNREACH for IPv6-only lookups
-const lookup = (hostname, options, callback) =>
-  dns.lookup(hostname, { ...options, family: 4 }, callback);
-
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // false = STARTTLS — required for port 587
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS, // Gmail App Password
   },
-  requireTLS: true,
-  connectionTimeout: 60000,
-  greetingTimeout: 60000,
-  socketTimeout: 60000,
-  authTimeout: 60000,
-  tls: {
-    rejectUnauthorized: false,
-  },
-  // Use IPv4-only lookup. Optionally bind outgoing socket to a specific IPv4
-  // address by setting the LOCAL_ADDRESS env var (do NOT default to 0.0.0.0).
-  lookup,
-  ...(process.env.LOCAL_ADDRESS
-    ? { localAddress: process.env.LOCAL_ADDRESS }
-    : {}),
 });
 
 /**
@@ -77,16 +59,6 @@ export const sendContactMessage = async (req, res) => {
     }
 
     const adminEmail = process.env.ADMIN_EMAIL;
-
-    if (!adminEmail || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      return res.status(500).json({
-        success: false,
-        message: "Server configuration error.",
-      });
-    }
-
-    // Verify SMTP connection before sending emails
-    await transporter.verify();
 
     // Email to admin
     await transporter.sendMail({
