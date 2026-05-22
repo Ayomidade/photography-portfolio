@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { config } from "dotenv";
 
 /**
  * Contact Controller
@@ -12,6 +13,7 @@ import { Resend } from "resend";
  * - ADMIN_EMAIL: where contact form submissions are delivered
  */
 
+config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
@@ -52,33 +54,31 @@ export const sendContactMessage = async (req, res) => {
     await resend.emails.send({
       from: "Anthony Monday Portfolio <onboarding@resend.dev>",
       to: [adminEmail],
-      reply_to: email,
+      replyTo: email,
       subject: `New Contact: ${subject}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #f9f9f9; border: 1px solid #e0e0e0;">
           <h2 style="font-size: 22px; font-weight: 400; color: #1a1a1a; margin-bottom: 24px;">
             New Contact Inquiry
           </h2>
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #888; font-size: 12px; width: 90px;">Name</td>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #1a1a1a; font-size: 14px;">${name}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #888; font-size: 12px;">Email</td>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #1a1a1a; font-size: 14px;">${email}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #888; font-size: 12px;">Subject</td>
-              <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #1a1a1a; font-size: 14px;">${subject}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 0; color: #888; font-size: 12px; vertical-align: top;">Message</td>
-              <td style="padding: 12px 0; color: #1a1a1a; font-size: 14px; line-height: 1.7;">
-                ${message.replace(/\n/g, "<br>")}
-              </td>
-            </tr>
-          </table>
+          <div style="display: grid; gap: 16px;">
+            <div style="padding: 16px; background: #fff; border-radius: 8px;">
+              <p style="margin: 0 0 8px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Name</p>
+              <p style="margin: 0; color: #1a1a1a; font-size: 14px;">${name}</p>
+            </div>
+            <div style="padding: 16px; background: #fff; border-radius: 8px;">
+              <p style="margin: 0 0 8px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Email</p>
+              <p style="margin: 0; color: #1a1a1a; font-size: 14px;">${email}</p>
+            </div>
+            <div style="padding: 16px; background: #fff; border-radius: 8px;">
+              <p style="margin: 0 0 8px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Subject</p>
+              <p style="margin: 0; color: #1a1a1a; font-size: 14px;">${subject}</p>
+            </div>
+            <div style="padding: 16px; background: #fff; border-radius: 8px;">
+              <p style="margin: 0 0 8px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Message</p>
+              <p style="margin: 0; color: #1a1a1a; font-size: 14px; line-height: 1.7;">${message.replace(/\n/g, "<br>")}</p>
+            </div>
+          </div>
           <p style="margin-top: 24px; font-size: 11px; color: #aaa;">
             Reply directly to this email to respond to ${name} at ${email}
           </p>
@@ -100,13 +100,15 @@ export const sendContactMessage = async (req, res) => {
           <p style="font-size: 14px; color: #444; line-height: 1.8; margin-bottom: 20px;">
             Your message has been received. I'll be in touch shortly.
           </p>
-          <div style="padding: 20px; background: #fff; border-left: 3px solid #1a1a1a; margin-bottom: 24px;">
-            <p style="font-size: 11px; color: #888; margin-bottom: 8px; text-transform: uppercase;">
-              Your message
-            </p>
-            <p style="font-size: 14px; color: #444; line-height: 1.7; margin: 0;">
-              ${message.replace(/\n/g, "<br>")}
-            </p>
+          <div style="display: grid; gap: 16px; padding: 20px; background: #fff; border-radius: 8px; margin-bottom: 24px;">
+            <div>
+              <p style="margin: 0 0 8px; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Subject</p>
+              <p style="margin: 0; color: #1a1a1a; font-size: 14px;">${subject}</p>
+            </div>
+            <div>
+              <p style="margin: 0 0 8px; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Message</p>
+              <p style="margin: 0; color: #444; font-size: 14px; line-height: 1.7;">${message.replace(/\n/g, "<br>")}</p>
+            </div>
           </div>
           <p style="font-size: 12px; color: #aaa;">
             If you did not send this message, please ignore this email.
