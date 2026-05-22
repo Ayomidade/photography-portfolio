@@ -50,7 +50,7 @@ export const sendContactMessage = async (req, res) => {
 
     // ── Email to Anthony ──
     await resend.emails.send({
-      from: "Anthony Monday Portfolio <onboarding@resend.dev>",
+      from: "onboarding@resend.dev",
       to: adminEmail,
       replyTo: email,
       subject: `New Contact: ${subject}`,
@@ -88,7 +88,7 @@ export const sendContactMessage = async (req, res) => {
 
     // ── Confirmation to visitor ──
     await resend.emails.send({
-      from: "Anthony Monday Photography <onboarding@resend.dev>",
+      from: "onboarding@resend.dev",
       to: email,
       subject: `We received your message — ${subject}`,
       html: `
