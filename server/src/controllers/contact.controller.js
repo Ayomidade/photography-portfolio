@@ -5,22 +5,15 @@ import { config } from "dotenv";
  * Contact Controller
  *
  * Uses Resend HTTP API — works reliably on Render free tier.
- * Nodemailer SMTP fails on Render due to outbound port blocking
- * and IPv6 routing issues on the free plan.
  *
- * Requires:
- * - RESEND_API_KEY: from resend.com dashboard
- * - ADMIN_EMAIL: where contact form submissions are delivered
+ * Requires env vars:
+ * - RESEND_API_KEY  — from resend.com dashboard
+ * - ADMIN_EMAIL     — where contact form submissions are delivered
  */
 
 config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * sendContactMessage
- * POST /api/contact
- * Body: { name, email, subject, message }
- */
 export const sendContactMessage = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
@@ -57,8 +50,8 @@ export const sendContactMessage = async (req, res) => {
       replyTo: email,
       subject: `New Contact: ${subject}`,
       html: `
-        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #f9f9f9; border: 1px solid #e0e0e0;">
-          <h2 style="font-size: 22px; font-weight: 400; color: #1a1a1a; margin-bottom: 24px;">
+        <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:32px;background:#f9f9f9;border:1px solid #e0e0e0;">
+          <h2 style="font-size:22px;font-weight:400;color:#1a1a1a;margin-bottom:24px;">
             New Contact Inquiry
           </h2>
           <div style="display: grid; gap: 16px;">
@@ -92,12 +85,12 @@ export const sendContactMessage = async (req, res) => {
       to: [email],
       subject: `We received your message — ${subject}`,
       html: `
-        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #f9f9f9; border: 1px solid #e0e0e0;">
-          <h2 style="font-size: 22px; font-weight: 400; color: #1a1a1a; margin-bottom: 8px;">
+        <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:32px;background:#f9f9f9;border:1px solid #e0e0e0;">
+          <h2 style="font-size:22px;font-weight:400;color:#1a1a1a;margin-bottom:8px;">
             Thank you, ${name}.
           </h2>
-          <p style="font-size: 12px; color: #888; margin-bottom: 24px;">Anthony Monday Photography</p>
-          <p style="font-size: 14px; color: #444; line-height: 1.8; margin-bottom: 20px;">
+          <p style="font-size:12px;color:#888;margin-bottom:24px;">Anthony Monday Photography</p>
+          <p style="font-size:14px;color:#444;line-height:1.8;margin-bottom:20px;">
             Your message has been received. I'll be in touch shortly.
           </p>
           <div style="display: grid; gap: 16px; padding: 20px; background: #fff; border-radius: 8px; margin-bottom: 24px;">
@@ -110,7 +103,7 @@ export const sendContactMessage = async (req, res) => {
               <p style="margin: 0; color: #444; font-size: 14px; line-height: 1.7;">${message.replace(/\n/g, "<br>")}</p>
             </div>
           </div>
-          <p style="font-size: 12px; color: #aaa;">
+          <p style="font-size:12px;color:#aaa;">
             If you did not send this message, please ignore this email.
           </p>
         </div>
