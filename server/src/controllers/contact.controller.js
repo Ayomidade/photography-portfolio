@@ -52,7 +52,7 @@ export const sendContactMessage = async (req, res) => {
     // ── Email to Anthony ──
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: ayomikesam@gmail.com,
+      to: 'ayomikesam@gmail.com',
       replyTo: email,
       subject: `New Contact: ${subject}`,
       html: `
