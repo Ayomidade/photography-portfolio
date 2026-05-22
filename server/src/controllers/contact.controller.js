@@ -51,8 +51,8 @@ export const sendContactMessage = async (req, res) => {
     // ── Email to Anthony ──
     await resend.emails.send({
       from: "Anthony Monday Portfolio <onboarding@resend.dev>",
-      to: [adminEmail],
-      reply_to: email,
+      to: adminEmail,
+      replyTo: email,
       subject: `New Contact: ${subject}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #f9f9f9; border: 1px solid #e0e0e0;">
@@ -89,7 +89,7 @@ export const sendContactMessage = async (req, res) => {
     // ── Confirmation to visitor ──
     await resend.emails.send({
       from: "Anthony Monday Photography <onboarding@resend.dev>",
-      to: [email],
+      to: email,
       subject: `We received your message — ${subject}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #f9f9f9; border: 1px solid #e0e0e0;">
